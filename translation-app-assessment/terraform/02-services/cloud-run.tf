@@ -1,0 +1,91 @@
+/*
+ * Copyright 2020 Google LLC. This software is provided as-is, without warranty
+ * or representation for any use or purpose. Your use of it is subject to your
+ * agreement with Google.
+ */
+
+resource "google_cloud_run_service" "token_broker" {
+  name     = "pe-token-broker"
+  location = var.region
+  project  = var.project_id
+
+  template {
+    spec {
+      service_account_name = google_service_account.token_broker_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/pe-token-broker:v1"
+        env {
+          name  = "GCP_PROJECT"
+          value = var.project_id
+        }
+        env {
+          name  = "API_GATEWAY_AUDIENCE"
+          value = var.oidc_audience
+        }
+      }
+    }
+  }
+
+}
+
+resource "google_cloud_run_service" "reporting" {
+  name     = "pe-reporting"
+  location = var.region
+  project  = var.project_id
+
+  template {
+    spec {
+      service_account_name = google_service_account.reporting_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/pe-reporting:v1"
+        env {
+          name  = "GCP_PROJECT"
+          value = var.project_id
+        }
+      }
+    }
+  }
+}
+
+resource "google_cloud_run_service" "telemetry" {
+  name     = "pe-telemetry"
+  location = var.region
+  project  = var.project_id
+
+  template {
+    spec {
+      service_account_name = google_service_account.telemetry_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/pe-telemetry:v1"
+        env {
+          name  = "GCP_PROJECT"
+          value = var.project_id
+        }
+      }
+    }
+  }
+}
+
+resource "google_cloud_run_service" "cleanup" {
+  name     = "pe-cleanup"
+  location = var.region
+  project  = var.project_id
+
+  template {
+    spec {
+      service_account_name = google_service_account.cleanup_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/pe-cleanup:v1"
+        env {
+          name  = "GCP_PROJECT"
+          value = var.project_id
+        }
+        env {
+          name  = "LOCATION"
+          value = var.region
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,17 @@
+{
+  "error-1": {
+    "foo": "bar"
+  },
+  "error-2": {
+    "foo": "bar"
+  },
+  "error-3": {
+    "foo": "bar"
+  },
+  "error-4": {
+    "foo": "bar"
+  },
+  "error-5": {
+    "foo": "bar"
+  }
+}

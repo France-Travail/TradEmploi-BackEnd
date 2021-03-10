@@ -1,0 +1,6 @@
+project_id = "aiestaran-pe-tests-3"
+
+notification_emails = {
+  "Jane Doe" = "jane.doe@example.com",
+  "John Doe" = "john.doe@example.com"
+}

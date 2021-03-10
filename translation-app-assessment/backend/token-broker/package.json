@@ -1,0 +1,24 @@
+{
+  "name": "token-broker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Google Cloud",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/iam-credentials": "^1.0.1",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "firebase-admin": "^9.5.0",
+    "moment": "^2.29.1",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "standard": "^16.0.3"
+  }
+}

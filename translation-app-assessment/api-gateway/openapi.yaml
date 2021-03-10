@@ -1,0 +1,143 @@
+# Copyright 2020 Google LLC. This software is provided as-is, without warranty
+# or representation for any use or purpose. Your use of it is subject to your
+# agreement with Google.
+
+swagger: '2.0'
+info:
+  title: API_ID optional-string
+  description: Sample API on API Gateway for PE
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+host: ${oidc_audience}
+paths:
+  /token:
+    post:
+      summary: Obtain tokens for GCP calls in exchange for Firebase tokens
+      operationId: token-post
+      x-google-backend:
+        address: ${token_broker_url}
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+    options:
+      summary: CORS
+      operationId: token-options
+      x-google-backend:
+        address: ${token_broker_url}
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
+  /reporting:
+    # http -v post https://pe-api-gw-ba7o489.ew.gateway.dev/reporting Authorization:"Bearer $TOKEN" query="query rates {rates{day, hour, language, facilityGrade, efficientGrade, offerLinked, comment}}"
+    post:
+      summary: Reporting endpoing (GraphQL)
+      operationId: reporting-post
+      x-google-backend:
+        address: ${reporting_url}
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+      security:
+        - admin-sa: []
+    options:
+      summary: CORS
+      operationId: reporting-options
+      x-google-backend:
+        address: ${token_broker_url}
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
+  /telemetry:
+    get:
+      summary: Test method
+      operationId: telemetry-get
+      x-google-backend:
+        address: ${telemetry_url}
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+      x-google-quota:
+        metricCosts:
+          "api-requests": 1
+      security:
+        - admin-sa: []
+        - guest-sa: []
+    options:
+      summary: CORS
+      operationId: telemetry-cors
+      x-google-backend:
+        address: ${token_broker_url}
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
+  /speech/translation:
+    post:
+      summary: Translation API
+      operationId: translation-post
+      x-google-backend:
+        address: https://translation.googleapis.com/language/translate/v2 # TODO missing querystring spec
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+      security:
+        - admin-sa: []
+        - guest-sa: []
+    options:
+      summary: CORS
+      operationId: translation-options
+      x-google-backend:
+        address: ${token_broker_url}
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
+
+securityDefinitions:
+  admin-sa:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: ${admin_sa_email}
+    x-google-jwks_uri: "https://www.googleapis.com/robot/v1/metadata/x509/${admin_sa_email}"
+    x-google-audiences: ${oidc_audience}
+  guest-sa:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: ${guest_sa_email}
+    x-google-jwks_uri: "https://www.googleapis.com/robot/v1/metadata/x509/${guest_sa_email}"
+    x-google-audiences: ${oidc_audience}
+
+x-google-management:
+  metrics:
+    # Define a metric for requests
+    - name: "api-requests"
+      displayName: "PE API requests"
+      valueType: INT64
+      metricKind: DELTA
+  quota:
+    limits:
+      # Define the limit or the read-requests metric.
+      - name: "api-limit"
+        metric: "api-requests"
+        unit: "1/min/{project}"
+        values:
+          STANDARD: 1000
