@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC. This software is provided as-is, without warranty
+// Copyright 2021 Google LLC. This software is provided as-is, without warranty
 // or representation for any use or purpose. Your use of it is subject to your
 // agreement with Google.
 
@@ -21,7 +21,7 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT'],
   maxAge: 3600
 }
-app.use(cors(corsOptions))
+app.use(cors())
 
 // Init project and services
 const projectId = process.env.GCP_PROJECT
@@ -90,14 +90,14 @@ async function getExpiriyFromRoom (roomId, userId) {
     const roomData = room.data()
     expiryDate = roomData.data && roomData.data.expiryDate && Moment(roomData.data.expiryDate)
     guestId = roomData.data && roomData.data.guestId
-
     // If this is a brand new room, it won't have any expiry date or guest id
     // attached to it, so we set those here
     if (!expiryDate && !guestId) {
       expiryDate = new Moment().add(2, 'hours') // default room TTL
       guestId = userId
       await roomReference.set({
-        expiryDate: parseInt(expiryDate.format('x')),
+        ...roomData,
+        // expiryDate: parseInt(expiryDate.format('x')),
         guestId: guestId
       })
     }
