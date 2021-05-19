@@ -82,29 +82,19 @@ async function getExpiriyFromRoom (roomId, userId) {
   const roomReference = await firestore.collection('chats').doc(roomId)
   const room = await roomReference.get()
   let expiryDate
-  let guestId
+  let guests
   let authorized = true
 
   // We only want to do anything if the room exists (created by an admin)
   if (room.exists) {
     const roomData = room.data()
-    expiryDate = roomData.data && roomData.data.expiryDate && Moment(roomData.data.expiryDate)
-    guestId = roomData.data && roomData.data.guestId
-    // If this is a brand new room, it won't have any expiry date or guest id
-    // attached to it, so we set those here
-    if (!expiryDate && !guestId) {
-      expiryDate = new Moment().add(2, 'hours') // default room TTL
-      guestId = userId
-      await roomReference.set({
-        ...roomData,
-        // expiryDate: parseInt(expiryDate.format('x')),
-        guestId: guestId
-      })
-    }
+    expiryDate = roomData && roomData.expiryDate && Moment(roomData.expiryDate)
+    guests = roomData && roomData.guests
 
     // Log and return on the various error scenarios:
     // Fail if this is the wrong guest for this room
-    if (guestId !== userId) {
+    const hasGuest  = guests.find(g => g.id === userId && g.status)
+    if (!hasGuest) {
       authorized = false
       console.log('Not authorized: user is not the guest in this room')
     }
@@ -164,7 +154,13 @@ app.post('/', async (req, res) => {
       res.send(400, 'Room ID is missing')
       return
     }
-    expiryDate = await getExpiriyFromRoom(req.body.roomId, userId)
+    if(req.body.firstname){
+      await addGuest(req.body.roomId, userId, req.body.firstname)
+      res.send(200, "GuestId added")
+      return
+    }else{
+      expiryDate = await getExpiriyFromRoom(req.body.roomId, userId)
+    }
   } else {
     // admin expiry defaults to 1 hour from current time
     expiryDate = new Moment().add(1, 'hours')
@@ -176,7 +172,6 @@ app.post('/', async (req, res) => {
     res.status(403).send("You're not allowed in this room")
     return
   }
-  console.log('user authorized until', expiryDate.toISOString())
 
   // finally generate and return the token
   const gcpTokenPromise = generateGcpToken(expiryDate, targetServiceAccount)
@@ -191,6 +186,16 @@ app.post('/', async (req, res) => {
   }
   res.send(response)
 })
+
+async function addGuest(roomId, userId, firstname){
+  const roomReference = await firestore.collection('chats').doc(roomId)
+  const room = await roomReference.get()
+  const roomData = room.data()
+  const guests = roomData && roomData.guests
+  await roomReference.update({
+    guests: [...guests, {id:userId, status:false, firstname:firstname}]
+  })
+}
 
 const port = process.env.PORT || 8080
 app.listen(port, () => {
