@@ -1,0 +1,20 @@
+image: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
+before_script:
+  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE
+  - gcloud config set project $GCP_PROJECT
+
+stages:        
+  - deploy
+
+deploy-job:      
+  stage: deploy
+  script:
+    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
+    - gcloud builds submit . 
+    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
+    - gcloud builds submit . 
+    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
+    - gcloud builds submit . 
+  only:
+    refs:
+      - develop
