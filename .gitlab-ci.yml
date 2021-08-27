@@ -10,11 +10,11 @@ deploy-job:
   stage: deploy
   script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
-    - gcloud builds submit . --project $GCP_PROJECT
+    - gcloud builds submit . 
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
-    - gcloud builds submit . --project $GCP_PROJECT
+    - gcloud builds submit . 
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
-    - gcloud builds submit . --project $GCP_PROJECT
+    - gcloud builds submit . 
   only:
     refs:
       - develop
