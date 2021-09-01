@@ -79,5 +79,6 @@ const buildRate = (rate: any) => {
       rate.grades && rate.grades.length > 0 ? rate.grades[1] : "-1",
     offerLinked: rate.offerLinked ? rate.offerLinked : "",
     comment: rate.comment ? rate.comment.replace(/\r?\n|\r/g, "") : "",
+    conversationDuration: rate.conversationDuration
   }
 }
