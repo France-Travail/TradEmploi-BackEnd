@@ -9,6 +9,7 @@ const schema = gql`
     efficientGrade: Int
     offerLinked: String
     comment: String
+    conversationDuration: String
   }
   type Kpi {
     day: String
