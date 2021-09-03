@@ -13,11 +13,11 @@ deploy:
     url: https://pole-emploi-trad.firebaseapp.com
   script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
-    - gcloud builds submit .
+    - gcloud builds submit . --region=europe-west2
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
-    - gcloud builds submit .
+    - gcloud builds submit . --region=europe-west2
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
-    - gcloud builds submit .
+    - gcloud builds submit . --region=europe-west2
   only:
     refs:
       - master
