@@ -10,14 +10,14 @@ deploy:
   stage: deploy
   environment:
     name: production
-    url: https://pole-emploi-trad.firebaseapp.com
+    url: https://pole-emploi-trad-prod.firebaseapp.com
   script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
-    - gcloud builds submit . --region=europe-west2
+    - gcloud builds submit .
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
-    - gcloud builds submit . --region=europe-west2
+    - gcloud builds submit .
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
-    - gcloud builds submit . --region=europe-west2
+    - gcloud builds submit .
   only:
     refs:
       - master
