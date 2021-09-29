@@ -64,20 +64,40 @@ app.get('/', async (req, res) => {
   console.log("hello");
 })
 
+async function createLanguagesFromRates() {
+
+    let languagesSelected = [];
+    await firestore.collection("rates").get().then((res) => {
+            res.forEach((doc) => {
+                const data = doc.data();
+                languagesSelected = languagesSelected.concat(data.language.split(','));
+            })
+        }
+    )
+    console.log(`Readed ${languagesSelected.length} rate documents.`);
+    const mapLanguages = languagesSelected.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
+    const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
+    Array.from(languagesSorted.keys()).forEach(isoCode =>
+        createLanguage(isoCode, languagesSorted.get(isoCode)));
+    console.log(`Created ${languagesSorted.size} language documents.`);
+}
+
 app.post('/', async (req, res) => {
-  await kpi()
-  // Delete chat that have been expired for an hour or longer
-  const deletionPromises = []
-  const collection = firestore.collection('chats')
-  const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
-  const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
-  for (const docSnapshot of querySnapshot.docs) {
-    deletionPromises.push(collection.doc(docSnapshot.id).delete())
-  }
-  await Promise.all(deletionPromises)
-  await writeMonitoring()
-  console.log(`Deleted ${querySnapshot.size} documents.`)
-  res.status(204).send()
+    await kpi()
+    // Delete chat that have been expired for an hour or longer
+    const deletionPromises = []
+    const collection = firestore.collection('chats')
+    const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
+    const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
+    for (const docSnapshot of querySnapshot.docs) {
+        deletionPromises.push(collection.doc(docSnapshot.id).delete())
+    }
+    await Promise.all(deletionPromises)
+    await writeMonitoring()
+    console.log(`Deleted ${querySnapshot.size} documents.`)
+
+    await createLanguagesFromRates();
+    res.status(204).send()
 })
 
 const port = process.env.PORT || 8080
@@ -283,4 +303,21 @@ const formatTime = (time) => {
 
 const formatNumber = (n) => {
   return (n < 10 ? "0" : "") + n
+}
+
+async function createLanguage(isoCode, occurrences) {
+    const language = {
+        isoCode: isoCode,
+        occurrences: occurrences
+    }
+    console.log("language >> :")
+    console.log(language)
+    await languageOnDb(language, isoCode)
+}
+
+const languageOnDb = async (data, isoCode) => {
+    if (!admin.apps.length) {
+        admin.initializeApp({})
+    }
+    return await firestore.collection("languages").doc(isoCode).set(data)
 }
