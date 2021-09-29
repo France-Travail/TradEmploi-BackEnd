@@ -2,6 +2,7 @@
 import {rates, rate} from './data/rates';
 import { getKpi } from "./data/kpi";
 import { error, errorFormatted } from "./data/error";
+import {languages} from "./data/languages";
 
 const resolverFunctions = {
   Query: {
@@ -15,6 +16,9 @@ const resolverFunctions = {
     },
     kpi: async (_parent:any, _args:any, context: any) => {
       return isConnected(context) ? await getKpi() : null
+    },
+    languages: async (_parent:any, _args:any) => {
+      return  await languages()
     },
     error: async (_parent:any, roomIdArg:any, context: any) => {
       const json = JSON.stringify(roomIdArg)
