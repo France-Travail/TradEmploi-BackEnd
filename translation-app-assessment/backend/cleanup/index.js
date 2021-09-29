@@ -297,7 +297,7 @@ async function createLanguagesFromRates() {
         }
     )
     console.log(`Readed ${languagesSelected.length} rate documents.`);
-    const mapLanguages = languagesSelected.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
+    const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
     Array.from(languagesSorted.keys()).forEach(isoCode =>
         createLanguage(isoCode, languagesSorted.get(isoCode)));
