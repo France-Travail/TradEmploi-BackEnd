@@ -1,6 +1,10 @@
 const { gql } = require('apollo-server-express');
 
 const schema = gql`
+ type Languages {
+    isoCode: String
+    occurrences: Int
+  }
   type Rate {
     day: String
     hour: String
