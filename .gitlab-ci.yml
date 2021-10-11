@@ -1,13 +1,16 @@
 image: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
 before_script:
-  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE_UAT
-  - gcloud config set project $GCP_PROJECT_UAT
+  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE_RECETTE
+  - gcloud config set project $GCP_PROJECT_RECETTE
 
 stages:
-  - release
+  - deploy
 
 deploy-job:
   stage: deploy
+  environment:
+    name: recette
+    url: https://pole-emploi-trad-recette.firebaseapp.com
   script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
     - gcloud builds submit .
