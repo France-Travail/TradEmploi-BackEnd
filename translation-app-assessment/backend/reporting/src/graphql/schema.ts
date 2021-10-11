@@ -1,6 +1,10 @@
 const { gql } = require('apollo-server-express');
 
 const schema = gql`
+ type Language {
+    isoCode: String
+    occurrences: Int
+  }
   type Rate {
     day: String
     hour: String
@@ -64,8 +68,9 @@ const schema = gql`
     rates: [Rate]
     rate(language: String): [Rate]
     kpi:[Kpi]
+    languages: [Language]
     error(roomId: String): [Error]
-  },
+  }
   type Mutation {
     login(key: String): String
   }
