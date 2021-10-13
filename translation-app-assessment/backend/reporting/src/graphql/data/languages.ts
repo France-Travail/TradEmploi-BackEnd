@@ -44,7 +44,7 @@ const languageOnDb = async (data: any, isoCode: string) => {
 
 export const launchCronForLanguages = async () => {
   const job = new CronJob(
-      "* 12,17 * * *",
+      "* 13,18 * * *",
       async () => {
         if (!admin.apps.length) {
           admin.initializeApp({})
@@ -57,7 +57,7 @@ export const launchCronForLanguages = async () => {
               })
             }
         )
-        const mapLanguages = languagesSelected.reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
+        const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
         const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
         Array.from(languagesSorted.keys()).forEach(isoCode =>
             createLanguage(isoCode, languagesSorted.get(isoCode)));
