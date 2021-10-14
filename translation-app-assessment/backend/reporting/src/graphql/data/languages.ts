@@ -44,7 +44,7 @@ const languageOnDb = async (data: any, isoCode: string) => {
 
 export const launchCronForLanguages = async () => {
   const job = new CronJob(
-      "* 13,18 * * *",
+      "* 12,17 * * *",
       async () => {
         if (!admin.apps.length) {
           admin.initializeApp({})
