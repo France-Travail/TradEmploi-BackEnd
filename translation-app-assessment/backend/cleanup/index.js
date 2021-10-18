@@ -286,6 +286,18 @@ const formatTime = (time) => {
 const formatNumber = (n) => {
   return (n < 10 ? "0" : "") + n
 }
+
+function setAverage(langaugesAverageRate, data) {
+    if (data.efficientGrade) {
+        const existingItem = langaugesAverageRate.get(data.language);
+        if (existingItem) {
+            langaugesAverageRate.set(data.language, existingItem + data.efficientGrade);
+        } else {
+            langaugesAverageRate.set(data.language, data.efficientGrade);
+        }
+    }
+}
+
 async function createLanguagesFromRates() {
 
     let languagesSelected = [];
@@ -294,16 +306,9 @@ async function createLanguagesFromRates() {
             res.forEach((doc) => {
                 const data = doc.data();
                 if (data.language) {
+                    console.log(`data.language: ${data.language}`);
                     languagesSelected = languagesSelected.concat(data.language.split(','));
-                    const existingItem = langaugesAverageRate.get(data.language);
-                    if (data.average) {
-                        if (existingItem) {
-                            langaugesAverageRate.set(data.language, existingItem + data.average);
-                        } else {
-                            langaugesAverageRate.set(data.language, data.average);
-                        }
-                    }
-
+                    setAverage(langaugesAverageRate, data);
                 }
             })
         }
