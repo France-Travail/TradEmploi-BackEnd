@@ -325,7 +325,7 @@ async function createLanguage(isoCode, occurrences, average) {
     const data = {
         isoCode: isoCode,
         occurrences: occurrences,
-        average
+        average: average?average: ''
     }
     console.log(data);
     await firestore.collection("languages").doc(isoCode).set(data)
