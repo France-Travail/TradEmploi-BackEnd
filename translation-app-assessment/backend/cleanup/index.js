@@ -308,7 +308,7 @@ async function createLanguagesFromRates() {
                 const language = data.language + '';
                 if (language) {
                     languagesSelected = languagesSelected.concat(language.split(','));
-                   // setAverage(langaugesAverageRate, data);
+                    setAverage(langaugesAverageRate, data);
                 }
             })
         }
