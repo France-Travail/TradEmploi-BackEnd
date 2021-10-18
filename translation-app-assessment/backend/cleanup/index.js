@@ -306,9 +306,8 @@ async function createLanguagesFromRates() {
             res.forEach((doc) => {
                 const data = doc.data();
                 if (data.language) {
-                    console.log(`data.language: ${data.language}`);
                     languagesSelected = languagesSelected.concat(data.language.split(','));
-                    setAverage(langaugesAverageRate, data);
+                    //setAverage(langaugesAverageRate, data);
                 }
             })
         }
