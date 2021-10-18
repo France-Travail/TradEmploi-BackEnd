@@ -4,6 +4,7 @@ const schema = gql`
  type Language {
     isoCode: String
     occurrences: Int
+    average: Int
   }
   type Rate {
     day: String

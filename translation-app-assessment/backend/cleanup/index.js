@@ -289,10 +289,20 @@ const formatNumber = (n) => {
 async function createLanguagesFromRates() {
 
     let languagesSelected = [];
+    let langaugesAverageRate = new Map();
     await firestore.collection("rates").get().then((res) => {
             res.forEach((doc) => {
                 const data = doc.data();
                 languagesSelected = languagesSelected.concat(data.language.split(','));
+                const existingItem = langaugesAverageRate.get(data.language);
+                if (data.average) {
+                    if (existingItem) {
+                        langaugesAverageRate.set(data.language, existingItem + data.average);
+                    } else {
+                        langaugesAverageRate.set(data.language, data.average);
+                    }
+                }
+
             })
         }
     )
@@ -300,16 +310,16 @@ async function createLanguagesFromRates() {
     const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
     Array.from(languagesSorted.keys()).forEach(isoCode =>
-        createLanguage(isoCode, languagesSorted.get(isoCode)));
+        createLanguage(isoCode, languagesSorted.get(isoCode),langaugesAverageRate.get(isoCode)));
     console.log(`Created ${languagesSorted.size} language documents.`);
 }
 
-async function createLanguage(isoCode, occurrences) {
+async function createLanguage(isoCode, occurrences, average) {
     const data = {
         isoCode: isoCode,
-        occurrences: occurrences
+        occurrences: occurrences,
+        average
     }
-    console.log("language >> :")
     console.log(data);
     await firestore.collection("languages").doc(isoCode).set(data)
 }
