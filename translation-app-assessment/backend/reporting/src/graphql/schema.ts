@@ -14,6 +14,7 @@ const schema = gql`
     offerLinked: String
     comment: String
     conversationDuration: String
+    typeEntretien: String
   }
   type Kpi {
     day: String
