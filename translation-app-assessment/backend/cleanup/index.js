@@ -305,9 +305,10 @@ async function createLanguagesFromRates() {
     await firestore.collection("rates").get().then((res) => {
             res.forEach((doc) => {
                 const data = doc.data();
-                if (data.language) {
-                    languagesSelected = languagesSelected.concat(data.language.split(','));
-                    //setAverage(langaugesAverageRate, data);
+                const language = data.language + '';
+                if (language) {
+                    languagesSelected = languagesSelected.concat(language.split(','));
+                    setAverage(langaugesAverageRate, data);
                 }
             })
         }
