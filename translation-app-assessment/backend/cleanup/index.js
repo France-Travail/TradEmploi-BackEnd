@@ -288,15 +288,14 @@ const formatNumber = (n) => {
 }
 
 function setAverage(langaugesAverageRate, data) {
-    console.log(`data.efficientGrade ${data.efficientGrade}`);
-    if (data.efficientGrade) {
+    if (data.grades && data.grades.length > 0) {
+        const grade = data.grades[1];
+        console.log(`grade ${grade}`);
         const existingItem = langaugesAverageRate.get(data.language);
-        console.log(`existingItem ${existingItem}`);
         if (existingItem) {
-            langaugesAverageRate.set(data.language, existingItem + data.efficientGrade);
+            langaugesAverageRate.set(data.language, existingItem + grade);
         } else {
-            langaugesAverageRate.set(data.language, data.efficientGrade);
-            console.log(`langaugesAverageRate ${langaugesAverageRate}`);
+            langaugesAverageRate.set(data.language, grade);
         }
     }
 }
@@ -317,7 +316,6 @@ async function createLanguagesFromRates() {
         }
     )
     console.log(`Readed ${languagesSelected.length} rate documents.`);
-    console.log(`langaugesAverageRate:: ${langaugesAverageRate.values()}`);
     const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
     Array.from(languagesSorted.keys()).forEach(isoCode =>
