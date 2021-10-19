@@ -290,7 +290,6 @@ const formatNumber = (n) => {
 function setAverage(langaugesAverageRate, data) {
     if (data.grades && data.grades.length > 0) {
         const grade = data.grades[1];
-        console.log(`grade ${grade}`);
         const existingItem = langaugesAverageRate.get(data.language);
         if (existingItem) {
             langaugesAverageRate.set(data.language, existingItem + grade);
@@ -327,7 +326,7 @@ async function createLanguage(isoCode, occurrences, average) {
     const data = {
         isoCode: isoCode,
         occurrences: occurrences,
-        average: average?average: ''
+        average: average && occurrences ?(average/occurrences): ''
     }
     console.log(data);
     await firestore.collection("languages").doc(isoCode).set(data)
