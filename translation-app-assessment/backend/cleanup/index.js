@@ -303,7 +303,7 @@ function setAverage(langaugesAverageRate, data) {
 async function createLanguagesFromRates() {
 
     let languagesSelected = [];
-    let langaugesAverageRate = new Map();
+    var langaugesAverageRate = new Map();
     await firestore.collection("rates").get().then((res) => {
             res.forEach((doc) => {
                 const data = doc.data();
