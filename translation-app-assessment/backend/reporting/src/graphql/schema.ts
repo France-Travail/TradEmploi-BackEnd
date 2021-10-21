@@ -4,6 +4,7 @@ const schema = gql`
  type Language {
     isoCode: String
     occurrences: Int
+    average: Int
   }
   type Rate {
     day: String
@@ -14,6 +15,7 @@ const schema = gql`
     offerLinked: String
     comment: String
     conversationDuration: String
+    typeEntretien: String
   }
   type Kpi {
     day: String

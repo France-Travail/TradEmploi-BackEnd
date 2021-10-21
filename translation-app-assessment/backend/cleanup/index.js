@@ -286,13 +286,31 @@ const formatTime = (time) => {
 const formatNumber = (n) => {
   return (n < 10 ? "0" : "") + n
 }
+
+function setAverage(langaugesAverageRate, data) {
+    if (data.grades && data.grades.length > 0) {
+        const grade = data.grades[1];
+        const existingItem = langaugesAverageRate.get(data.language);
+        if (existingItem) {
+            langaugesAverageRate.set(data.language, existingItem + grade);
+        } else {
+            langaugesAverageRate.set(data.language, grade);
+        }
+    }
+}
+
 async function createLanguagesFromRates() {
 
     let languagesSelected = [];
+    var langaugesAverageRate = new Map();
     await firestore.collection("rates").get().then((res) => {
             res.forEach((doc) => {
                 const data = doc.data();
-                languagesSelected = languagesSelected.concat(data.language.split(','));
+                const language = data.language + '';
+                if (language) {
+                    languagesSelected = languagesSelected.concat(language.split(','));
+                    setAverage(langaugesAverageRate, data);
+                }
             })
         }
     )
@@ -300,16 +318,16 @@ async function createLanguagesFromRates() {
     const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
     Array.from(languagesSorted.keys()).forEach(isoCode =>
-        createLanguage(isoCode, languagesSorted.get(isoCode)));
+        createLanguage(isoCode, languagesSorted.get(isoCode),langaugesAverageRate.get(isoCode)));
     console.log(`Created ${languagesSorted.size} language documents.`);
 }
 
-async function createLanguage(isoCode, occurrences) {
+async function createLanguage(isoCode, occurrences, average) {
     const data = {
         isoCode: isoCode,
-        occurrences: occurrences
+        occurrences: occurrences,
+        average: average && occurrences ?(average/occurrences): ''
     }
-    console.log("language >> :")
     console.log(data);
     await firestore.collection("languages").doc(isoCode).set(data)
 }

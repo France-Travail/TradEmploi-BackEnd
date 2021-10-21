@@ -79,6 +79,7 @@ const buildRate = (rate: any) => {
       rate.grades && rate.grades.length > 0 ? rate.grades[1] : "-1",
     offerLinked: rate.offerLinked ? rate.offerLinked : "",
     comment: rate.comment ? rate.comment.replace(/\r?\n|\r/g, "") : "",
-    conversationDuration: rate.conversationDuration ? rate.conversationDuration : ""
+    conversationDuration: rate.conversationDuration ? rate.conversationDuration : "",
+    typeEntretien: rate.typeEntretien ? rate.typeEntretien : ""
   }
 }
