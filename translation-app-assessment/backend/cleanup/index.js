@@ -298,12 +298,9 @@ async function createLanguagesFromRates() {
                 const language = data.language + '';
                 if (language) {
                     languagesSelected = languagesSelected.concat(language.split(','));
-                    console.log(`data ${data}, data.grades ${data.grades}`);
                     if (data.grades && data.grades.length > 0) {
                         const grade = data.grades[1];
-                        const existingItem = langaugesAverageRate.get(data.language);
-                        console.log(`existingItem ${existingItem}, data.language ${data.language}`);
-                        if (existingItem) {
+                        const existingItem = langaugesAverageRate.get(data.language);  if (existingItem) {
                             langaugesAverageRate.set(data.language, existingItem + grade);
                         } else {
                             langaugesAverageRate.set(data.language, grade);
@@ -313,9 +310,8 @@ async function createLanguagesFromRates() {
             })
         }
     )
-
     console.log(`Readed ${languagesSelected.length} rate documents.`);
-    console.log(`langaugesAverageRatesize ${langaugesAverageRate.size}` );
+    langaugesAverageRate.forEach( logMapElements);
     const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
     Array.from(languagesSorted.keys()).forEach(isoCode => {
@@ -325,7 +321,9 @@ async function createLanguagesFromRates() {
     );
     console.log(`Created ${languagesSorted.size} language documents.`);
 }
-
+function logMapElements(value, key, map) {
+    console.log(`m[${key}] = ${value}`);
+}
 async function createLanguage(isoCode, occurrences, average) {
     const data = {
         isoCode: isoCode,
