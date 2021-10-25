@@ -295,12 +295,12 @@ async function createLanguagesFromRates() {
     await firestore.collection("rates").get().then((res) => {
             res.forEach((doc) => {
                 const data = doc.data();
-                const language = data.language + '';
-                if (language) {
-                    languagesSelected = languagesSelected.concat(language.split(','));
+                if (data.language) {
+                    languagesSelected = languagesSelected.concat(data.language.split(','));
                     if (data.grades && data.grades.length > 0) {
                         const grade = data.grades[1];
-                        const existingItem = langaugesAverageRate.get(data.language);  if (existingItem) {
+                        const existingItem = langaugesAverageRate.get(data.language);
+                        if (existingItem) {
                             langaugesAverageRate.set(data.language, existingItem + grade);
                         } else {
                             langaugesAverageRate.set(data.language, grade);
@@ -328,7 +328,7 @@ async function createLanguage(isoCode, occurrences, average) {
     const data = {
         isoCode: isoCode,
         occurrences: occurrences,
-        average: average && occurrences ?(average/occurrences): ''
+        average: (average && occurrences) ?(average/occurrences): ''
     }
     console.log(data);
     await firestore.collection("languages").doc(isoCode).set(data)
