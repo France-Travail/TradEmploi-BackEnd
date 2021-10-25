@@ -291,6 +291,7 @@ function setAverage(langaugesAverageRate, data) {
     if (data.grades && data.grades.length > 0) {
         const grade = data.grades[1];
         const existingItem = langaugesAverageRate.get(data.language);
+        console.log(`existingItem ${existingItem}, data.language ${data.language}`);
         if (existingItem) {
             langaugesAverageRate.set(data.language, existingItem + grade);
         } else {
@@ -314,11 +315,16 @@ async function createLanguagesFromRates() {
             })
         }
     )
+
     console.log(`Readed ${languagesSelected.length} rate documents.`);
+    console.log(`langaugesAverageRatesize ${langaugesAverageRate.size}` );
     const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
-    Array.from(languagesSorted.keys()).forEach(isoCode =>
-        createLanguage(isoCode, languagesSorted.get(isoCode),langaugesAverageRate.get(isoCode)));
+    Array.from(languagesSorted.keys()).forEach(isoCode => {
+            console.log(`langaugesAverageRate value ${langaugesAverageRate.get(isoCode)}, isoCode ${isoCode}`);
+            createLanguage(isoCode, languagesSorted.get(isoCode), langaugesAverageRate.get(isoCode));
+        }
+    );
     console.log(`Created ${languagesSorted.size} language documents.`);
 }
 
