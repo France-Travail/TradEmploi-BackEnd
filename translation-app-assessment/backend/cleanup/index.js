@@ -287,30 +287,28 @@ const formatNumber = (n) => {
   return (n < 10 ? "0" : "") + n
 }
 
-function setAverage(langaugesAverageRate, data) {
-    if (data.grades && data.grades.length > 0) {
-        const grade = data.grades[1];
-        const existingItem = langaugesAverageRate.get(data.language);
-        console.log(`existingItem ${existingItem}, data.language ${data.language}`);
-        if (existingItem) {
-            langaugesAverageRate.set(data.language, existingItem + grade);
-        } else {
-            langaugesAverageRate.set(data.language, grade);
-        }
-    }
-}
 
 async function createLanguagesFromRates() {
 
     let languagesSelected = [];
-    var langaugesAverageRate = new Map();
+    let langaugesAverageRate = new Map();
     await firestore.collection("rates").get().then((res) => {
             res.forEach((doc) => {
                 const data = doc.data();
                 const language = data.language + '';
                 if (language) {
                     languagesSelected = languagesSelected.concat(language.split(','));
-                    setAverage(langaugesAverageRate, data);
+                    console.log(`data ${data}, data.grades ${data.grades}`);
+                    if (data.grades && data.grades.length > 0) {
+                        const grade = data.grades[1];
+                        const existingItem = langaugesAverageRate.get(data.language);
+                        console.log(`existingItem ${existingItem}, data.language ${data.language}`);
+                        if (existingItem) {
+                            langaugesAverageRate.set(data.language, existingItem + grade);
+                        } else {
+                            langaugesAverageRate.set(data.language, grade);
+                        }
+                    }
                 }
             })
         }
