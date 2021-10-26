@@ -12,7 +12,13 @@ app.disable('x-powered-by')
 
 // this is atest
 app.get('/', async (req, res) => {
-  res.send('Hi! This is the telemetry service!')
+  var agence = req.query.agence;
+  console.log('agence:',agence);
+  const response = {
+    status: 200,
+    message: 'Hi! This is the telemetry service!'
+  }
+  res.send(response)
 })
 
 const port = process.env.PORT || 8080
