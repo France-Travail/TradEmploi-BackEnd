@@ -12,11 +12,7 @@ deploy:
     name: staging
     url: https://pole-emploi-trad-dev.firebaseapp.com
   script:
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
+    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
     - gcloud builds submit .
   only:
     refs:
