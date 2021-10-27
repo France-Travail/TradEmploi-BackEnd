@@ -9,6 +9,9 @@ const express = require('express')
 const app = express()
 app.disable('x-powered-by')
 
+app.use(bodyParser.json())
+
+app.use(cors())
 
 // this is atest
 app.get('/', async (req, res) => {
