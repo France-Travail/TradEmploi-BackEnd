@@ -17,8 +17,8 @@ app.use(cors())
 
 // this is atest
 app.get('/', async (req, res) => {
-  var agence = req.query.agence;
-  console.log('agence:',agence);
+  var idDGASI = req.query.idDGASI;
+  console.log('idDGASI:',idDGASI);
   const response = {
     status: 200,
     message: 'Hi! This is the telemetry service!'
