@@ -21,6 +21,7 @@ app.get('/', async (req, res) => {
   console.log('idDGASI:',idDGASI);
   const response = {
     status: 200,
+    idDGASI,
     message: 'Hi! This is the telemetry service!'
   }
   res.send(response)
