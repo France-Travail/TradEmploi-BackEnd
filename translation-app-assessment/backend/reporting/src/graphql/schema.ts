@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+  const { gql } = require('apollo-server-express');
 
 const schema = gql`
  type Language {
@@ -15,7 +15,12 @@ const schema = gql`
     offerLinked: String
     comment: String
     conversationDuration: String
-    typeEntretien: String
+    typeEntretien: String;
+    nbMessagesAdvisor: Int;
+    nbMessagesGuest: Int;
+    user: String;
+    agency: String;
+    cloudSTT: String;
   }
   type Kpi {
     day: String
