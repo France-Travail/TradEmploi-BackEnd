@@ -15,12 +15,12 @@ const schema = gql`
     offerLinked: String
     comment: String
     conversationDuration: String
-    typeEntretien: String;
-    nbMessagesAdvisor: Int;
-    nbMessagesGuest: Int;
-    user: String;
-    agency: String;
-    cloudSTT: String;
+    typeEntretien: String
+    nbMessagesAdvisor: Int
+    nbMessagesGuest: Int
+    user: String
+    agency: String
+    cloudSTT: String
   }
   type Kpi {
     day: String
