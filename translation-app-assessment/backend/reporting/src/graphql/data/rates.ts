@@ -85,6 +85,6 @@ const buildRate = (rate: any) => {
     nbMessagesGuest: rate.nbMessagesGuest ? rate.nbMessagesGuest : 0,
     user: rate.user ? rate.user : "",
     agency: rate.agency ? rate.agency : "",
-    cloudSTT: rate.cloudSTT ? rate.cloudSTT:""
+    typeSTT: rate.typeSTT ? rate.typeSTT: ""
   }
 }

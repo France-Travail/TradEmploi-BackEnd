@@ -20,7 +20,7 @@ const schema = gql`
     nbMessagesGuest: Int
     user: String
     agency: String
-    cloudSTT: String
+    typeSTT: String
   }
   type Kpi {
     day: String
