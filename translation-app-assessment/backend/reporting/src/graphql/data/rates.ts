@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin"
 // import * as serviceAccount from "../../credentials/credentials.json"
-import { formatDate } from "../data/utils"
+import {formatDate} from "../data/utils"
 // const params = {
 //   type: serviceAccount.type,
 //   projectId: serviceAccount.project_id,
@@ -74,12 +74,17 @@ const buildRate = (rate: any) => {
     hour: rate.hour,
     language: rate.language ? rate.language : "Français",
     facilityGrade:
-      rate.grades && rate.grades.length > 0 ? rate.grades[0] : "-1",
+        rate.grades && rate.grades.length > 0 ? rate.grades[0] : "-1",
     efficientGrade:
-      rate.grades && rate.grades.length > 0 ? rate.grades[1] : "-1",
+        rate.grades && rate.grades.length > 0 ? rate.grades[1] : "-1",
     offerLinked: rate.offerLinked ? rate.offerLinked : "",
     comment: rate.comment ? rate.comment.replace(/\r?\n|\r/g, "") : "",
     conversationDuration: rate.conversationDuration ? rate.conversationDuration : "",
-    typeEntretien: rate.typeEntretien ? rate.typeEntretien : ""
+    typeEntretien: rate.typeEntretien ? rate.typeEntretien : "",
+    nbMessagesAdvisor: rate.nbMessagesAdvisor ? rate.nbMessagesAdvisor : 0,
+    nbMessagesGuest: rate.nbMessagesGuest ? rate.nbMessagesGuest : 0,
+    user: rate.user ? rate.user : "",
+    agency: rate.agency ? rate.agency : "",
+    typeSTT: rate.typeSTT ? rate.typeSTT: ""
   }
 }
