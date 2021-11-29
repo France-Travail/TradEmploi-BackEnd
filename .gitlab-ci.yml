@@ -11,6 +11,8 @@ deploy-job:
     name: recette
     url: https://pole-emploi-trad-recette.firebaseapp.com
   script:
+    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/translation
+    - gcloud builds submit .
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
     - gcloud builds submit .
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
