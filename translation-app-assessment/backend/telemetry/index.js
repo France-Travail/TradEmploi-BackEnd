@@ -4,15 +4,27 @@
 
 'use strict'
 const express = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors')
 
 // Init express.js app
 const app = express()
 app.disable('x-powered-by')
 
+app.use(bodyParser.json())
+
+app.use(cors())
 
 // this is atest
 app.get('/', async (req, res) => {
-  res.send('Hi! This is the telemetry service!')
+  var idDGASI = req.query.idDGASI;
+  console.log('idDGASI:',idDGASI);
+  const response = {
+    status: 200,
+    idDGASI,
+    message: 'Hi! This is the telemetry service!'
+  }
+  res.send(response)
 })
 
 const port = process.env.PORT || 8080
