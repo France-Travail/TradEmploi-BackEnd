@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 // import * as serviceAccount from "../../credentials/credentials.json";
-import { formatTime } from "./utils";
+import {formatTime} from "./utils";
 
 // const params = {
 //     type: serviceAccount.type,
@@ -25,10 +25,11 @@ export const error = async (roomId: String) => {
     return await admin
         .firestore()
         .collection("errors")
+        .where("roomId","==", roomId)
         .orderBy("day", "desc")
         .get()
         .then((res) => {
-            return buildErrors(res,roomId)
+            return buildErrors(res)
         }
     )
 }
@@ -45,28 +46,27 @@ export const errorFormatted = async (roomId: String) => {
     }
 }
 
-const buildErrors = (res: any, roomId: String) => {
+const buildErrors = (res: any) => {
     return res.docs
-        .filter((doc:any) => doc.data().roomId === roomId)
         .map((err: any) => buildError(err.data()))
 }
 
 const buildError = (error: any) => {
     return {
-            roomId: error.roomId,
-            day: error.day,
-            hour: formatTime(error.hour),
-            detail: {
-                code: error.detail.code,
-                description: error.detail.description 
-            }
+        roomId: error.roomId ? error.roomId : '',
+        day: error.day ? error.day : '',
+        hour: formatTime(error.hour),
+        detail: {
+            code: (error.detail && error.detail.code) ? error.detail.code : '',
+            description: (error.detail && error.detail.description) ? error.detail.description : ''
         }
+    }
 }
 const getErrorFormatted = (errors:any) => {
     const day = errors[0].day;
     const kpiError = ['501','503','500','403', '509', '408']
-    const errorKpi = errors.filter((error: any) => kpiError.includes(error.detail.code))
-    const descriptions = errorKpi.map((error:any) =>  error.detail.description).join(',');
+    const errorKpi = errors.filter((error: any) => error.detail && kpiError.includes(error.detail.code))
+    const descriptions = errorKpi.map((error:any) => error.detail && error.detail.description).join(',');
     const hours = errorKpi.map((error:any) => error.hour).join(',');
     return {
         day: day ? day: '',
