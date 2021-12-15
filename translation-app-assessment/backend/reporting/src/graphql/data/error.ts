@@ -69,8 +69,8 @@ const getErrorFormatted = (errors:any) => {
     const descriptions = errorKpi.map((error:any) =>  error.detail.description).join(',');
     const hours = errorKpi.map((error:any) => error.hour).join(',');
     return {
-        day: day,
-        hours: hours,
-        descriptions: descriptions
+        day: day ? day: '',
+        hours: hours ? hours: '',
+        descriptions: descriptions ? descriptions: ''
     }
 }
