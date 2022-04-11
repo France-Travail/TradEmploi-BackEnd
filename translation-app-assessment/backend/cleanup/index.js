@@ -75,8 +75,9 @@ app.post('/', async (req, res) => {
         deletionPromises.push(collection.doc(docSnapshot.id).delete())
     }
     await Promise.all(deletionPromises)
+    await cleanRates();
     await writeMonitoring()
-    console.log(`Deleted ${querySnapshot.size} documents.`)
+    console.log(`deleted chats, size:${querySnapshot.size}`)
 
     await createLanguagesFromRates();
     res.status(204).send()
@@ -87,6 +88,17 @@ app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })
 
+async function cleanRates(){
+    // Delete rates created by the end to end tests robot SD34N140
+    const deletionPromises = []
+    const collection = firestore.collection('rates')
+    const querySnapshot = await collection.where('user', '=', 'SD34N140').get()
+    for (const docSnapshot of querySnapshot.docs) {
+        deletionPromises.push(collection.doc(docSnapshot.id).delete())
+    }
+    console.log(`rates deleted, size:${deletionPromises.length},user: SD34N140`);
+    await Promise.all(deletionPromises)
+}
 
 async function kpi(){
   const roomsReference = await firestore.collection('chats')
@@ -296,7 +308,8 @@ async function createLanguagesFromRates() {
             res.forEach((doc) => {
                 const data = doc.data();
                 const language = data.language + '';
-                if (language) {
+                const user = data.user + '';
+                if (language && user != 'SD34N140') {
                     languagesSelected = languagesSelected.concat(language.split(','));
                     if (data.grades && data.grades.length > 0) {
                         const grade = data.grades[1];
@@ -311,27 +324,21 @@ async function createLanguagesFromRates() {
             })
         }
     )
-    console.log(`Readed ${languagesSelected.length} rate documents.`);
-    langaugesAverageRate.forEach( logMapElements);
     const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
     Array.from(languagesSorted.keys()).forEach(isoCode => {
-            console.log(`langaugesAverageRate value ${langaugesAverageRate.get(isoCode)}, isoCode ${isoCode}`);
             createLanguage(isoCode, languagesSorted.get(isoCode), langaugesAverageRate.get(isoCode));
         }
     );
-    console.log(`Created ${languagesSorted.size} language documents.`);
+    console.log(`language documents created, size: ${languagesSorted.size}`);
 }
-function logMapElements(value, key, map) {
-    console.log(`m[${key}] = ${value}`);
-}
+
 async function createLanguage(isoCode, occurrences, average) {
     const data = {
         isoCode: isoCode,
         occurrences: occurrences,
         average: (average && occurrences) ?(average/occurrences): ''
     }
-    console.log(data);
     await firestore.collection("languages").doc(isoCode).set(data)
 }
 
