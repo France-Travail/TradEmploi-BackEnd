@@ -3,6 +3,9 @@
 # agreement with Google.
 
 steps:
+  - name: node
+    entrypoint: npm
+    args: ['install']
   - name: gcr.io/k8s-skaffold/pack
     args:
       - build
