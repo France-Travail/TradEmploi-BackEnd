@@ -3,35 +3,35 @@
 # agreement with Google.
 
 steps:
-  - name: node
-    entrypoint: npm
+  - name: gcr.io/cloud-builders/npm
     args: ['install']
-  - name: gcr.io/k8s-skaffold/pack
-    args:
-      - build
-      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
-      - '--builder=gcr.io/buildpacks/builder:v1'
-    id: Buildpack
-    entrypoint: pack
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
-    id: Push
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
-    args:
-      - run
-      - services
-      - update
-      - $_SERVICE_NAME
-      - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
-      - --platform=managed
-      - --region=europe-west1
-      - >-
-        --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$_IMAGE_TAG,gcb-build-id=$BUILD_ID,$_LABELS
-      - '--quiet'
-    id: Deploy
-    entrypoint: gcloud
+    id: Install
+  # - name: gcr.io/k8s-skaffold/pack
+  #   args:
+  #     - build
+  #     - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
+  #     - '--builder=gcr.io/buildpacks/builder:v1'
+  #   id: Buildpack
+  #   entrypoint: pack
+  # - name: gcr.io/cloud-builders/docker
+  #   args:
+  #     - push
+  #     - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
+  #   id: Push
+  # - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+  #   args:
+  #     - run
+  #     - services
+  #     - update
+  #     - $_SERVICE_NAME
+  #     - '--image=$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
+  #     - --platform=managed
+  #     - --region=europe-west1
+  #     - >-
+  #       --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$_IMAGE_TAG,gcb-build-id=$BUILD_ID,$_LABELS
+  #     - '--quiet'
+  #   id: Deploy
+  #   entrypoint: gcloud
 images:
   - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
 options:
