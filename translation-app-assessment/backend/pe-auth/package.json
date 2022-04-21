@@ -2,8 +2,7 @@
   "name": "pe-auth",
   "scripts": {
     "build": "npx tsc",
-    "start": "node dist/index.js",
-    "postinstall": "npm run build"
+    "start": "node dist/index.js"
   },
   "main": "dist/index.js",
   "dependencies": {
