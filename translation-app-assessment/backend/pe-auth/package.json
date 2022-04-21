@@ -5,9 +5,6 @@
     "start": "node dist/index.js",
     "postinstall": "npm run build"
   },
-  "engines": {
-    "node": "12"
-  },
   "main": "dist/index.js",
   "dependencies": {
     "axios": "^0.26.1",
