@@ -3,16 +3,10 @@
 # agreement with Google.
 
 steps:
-  - name: node
-    entrypoint: npm
-    args: ['install']
-  - name: 'gcr.io/cloud-builders/docker'
+  - name: "gcr.io/cloud-builders/docker"
     args: [ 'build', '-t', '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG', '.' ]
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
-    id: Push
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG']
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     args:
       - run
