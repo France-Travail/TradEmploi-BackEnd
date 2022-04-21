@@ -7,6 +7,9 @@
     "start": "node dist/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
   },
+  "engines": {
+    "node": "12"
+  },
   "author": "",
   "license": "ISC",
   "devDependencies": {

@@ -3,9 +3,6 @@
 # agreement with Google.
 
 steps:
-  - name: gcr.io/cloud-builders/npm
-    args: ['install']
-    id: Install
   - name: gcr.io/k8s-skaffold/pack
     args:
       - build
