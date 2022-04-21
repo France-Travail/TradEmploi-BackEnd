@@ -4,9 +4,7 @@
     "lint": "tslint --project tsconfig.json",
     "build": "npx tsc",
     "start": "node dist/index.js",
-    "postinstall": "npm run build",
-    "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "postinstall": "npm run build"
   },
   "engines": {
     "node": "12"
