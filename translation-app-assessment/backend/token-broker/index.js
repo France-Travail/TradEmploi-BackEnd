@@ -10,6 +10,7 @@ const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
 const { IAMCredentialsClient } = require('@google-cloud/iam-credentials')
 
+
 // Init express.js app
 const app = express()
 app.use(bodyParser.json())
@@ -188,12 +189,10 @@ app.post('/', async (req, res) => {
 })
 
 async function addGuest(roomId, userId, firstname){
-  const roomReference = await firestore.collection('chats').doc(roomId)
-  const room = await roomReference.get()
-  const roomData = room.data()
-  const guests = roomData && roomData.guests
+  const roomReference = await firestore.collection('chats').doc(roomId);
+  const FieldValue = firebaseAdmin.firestore.FieldValue;
   await roomReference.update({
-    guests: [...guests, {id:userId, status:false, firstname:firstname}]
+    guests: FieldValue.arrayUnion({id: userId, status: false, firstname: firstname})
   })
 }
 
