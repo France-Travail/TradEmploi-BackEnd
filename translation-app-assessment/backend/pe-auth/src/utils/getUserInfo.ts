@@ -1,14 +1,14 @@
 import axios from "axios"
-import { accessTokenResponse } from "../models/accessTokenResponse";
+
 import { userInfosResponse } from "../models/userInfosResponse";
 require('dotenv').config()
-// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0' : ""
+// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0' 
 
-export const getUserInfo = async (accessTokenResponse:accessTokenResponse) => {
+export const getUserInfo = async (accessToken:string) => {
   
   const config = {
     headers: {
-      "Authorization": "Bearer "+accessTokenResponse.access_token,
+      "Authorization": "Bearer "+accessToken,
     },
   };
   return axios
@@ -20,7 +20,3 @@ export const getUserInfo = async (accessTokenResponse:accessTokenResponse) => {
       console.error(error);
     });
 }
-
-
-
-
