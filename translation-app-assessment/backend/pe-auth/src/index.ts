@@ -6,7 +6,7 @@ import { getAccessToken } from "./utils/getAccessToken"
 import { getUserInfo } from "./utils/getUserInfo"
 require("dotenv").config()
 const app: Express = express()
-const port = process.env.NODE_ENV === "production" ? 8080 : 4401
+const port = 8080 
 
 
 app.get("/callback", async (req: Request, res: Response) => {
