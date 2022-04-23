@@ -6,7 +6,7 @@ import { getAccessToken } from "./utils/getAccessToken"
 import { getUserInfo } from "./utils/getUserInfo"
 require("dotenv").config()
 const app: Express = express()
-const port = 8080
+const port = process.env.NODE_ENV === "production" ? 8080 : 4401
 
 
 app.get("/callback", async (req: Request, res: Response) => {
@@ -19,7 +19,7 @@ app.get("/callback", async (req: Request, res: Response) => {
     )) as unknown as userInfosResponse
     res.redirect(
       302,
-      `${process.env.REDIRECT_URI_FRONT}?name=${userInfos.name}&family_name=${userInfos.family_name}&email=${userInfos.email}&sub=${userInfos.sub}`
+      `${process.env.REDIRECT_URI_FRONT}?name=${userInfos.name}&family_name=${userInfos.family_name}&email=${userInfos.email}&sub=${userInfos.sub}&state=${query.state}`
     )
   } else {
     res.status(501).send("Internal error")
