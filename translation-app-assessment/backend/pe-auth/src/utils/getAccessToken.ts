@@ -3,7 +3,7 @@ import qs from "qs";
 import { accessTokenResponse } from "../models/accessTokenResponse";
 import { callBackResponse } from "../models/callBackResponse"
 require('dotenv').config()
-// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'; //remove on prod !!!
+// process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'
 
 export const getAccessToken = async (callBackResponse:callBackResponse):Promise<accessTokenResponse|void>  => {
   const data = {
