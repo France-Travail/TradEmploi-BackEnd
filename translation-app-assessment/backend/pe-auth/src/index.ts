@@ -7,7 +7,7 @@ import { getUserInfo } from "./utils/getUserInfo"
 require("dotenv").config()
 const cors = require('cors')
 const app: Express = express()
-const port = 4401
+const port = 8080
 
 // CORS options
 const corsOptions = {
