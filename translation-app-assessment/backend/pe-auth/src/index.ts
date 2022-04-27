@@ -7,12 +7,12 @@ import { getUserInfo } from "./utils/getUserInfo"
 require("dotenv").config()
 const cors = require('cors')
 const app: Express = express()
-const port = 8080 
+const port = 8080
 
 // CORS options
 const corsOptions = {
-  origin: /https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/, 
-  // origin: [/https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/, 'http://localhost:4200'], ///enable localhost during dev
+  //origin: /https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/,
+   origin: [/https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/, 'http://localhost:4200'], ///enable localhost during dev
   methods: ['GET', 'POST'],
   maxAge: 3600
 }
