@@ -1,4 +1,4 @@
-export interface callBackResponse  {
+export interface CallBackResponse {
     code:string,
     scope:string,
     iss:string,

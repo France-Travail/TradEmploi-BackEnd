@@ -7,7 +7,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
-// Init express.js app
 const app = express()
 app.disable('x-powered-by')
 
@@ -15,7 +14,6 @@ app.use(bodyParser.json())
 
 app.use(cors())
 
-// this is atest
 app.get('/', async (req, res) => {
   var idDGASI = req.query.idDGASI;
   console.log('idDGASI:',idDGASI);
