@@ -4,7 +4,7 @@ export const languages = async () => {
     if (!admin.apps.length) {
         admin.initializeApp();
     }
-    return await admin
+    return admin
         .firestore()
         .collection("languages")
         .orderBy("occurrences", "desc")
@@ -15,11 +15,11 @@ export const languages = async () => {
 }
 
 const buildLanguage = (res: any) => {
-    const languages = [{}]
+    const result = [{}]
     res.forEach((doc: any) => {
         const language = doc.data()
-        languages.push(language)
+        result.push(language)
     })
-    return languages.splice(1)
+    return result.splice(1)
 }
 

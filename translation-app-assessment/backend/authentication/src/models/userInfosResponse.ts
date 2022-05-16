@@ -1,4 +1,4 @@
-export interface userInfosResponse {
+export interface UserInfosResponse {
   sub: string;
   updated_at: string;
   name: string;

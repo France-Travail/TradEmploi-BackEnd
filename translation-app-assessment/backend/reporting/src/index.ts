@@ -1,6 +1,6 @@
 import {https} from 'firebase-functions';
 import {launchCron} from './graphql/data/kpi';
-import gqlServer from './graphql/server';
+import gqlServer from './graphql/gqlServer';
 
 
 const server = gqlServer();

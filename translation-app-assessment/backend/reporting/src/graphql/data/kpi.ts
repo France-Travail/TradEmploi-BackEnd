@@ -1,23 +1,10 @@
-import { CronJob } from "cron"
+import {CronJob} from "cron"
 import * as admin from "firebase-admin"
-// import * as serviceAccount from "../../credentials/credentials.json"
-import { Device, DeviceDto } from "../../model/device"
-import { Role } from "../../model/role"
-import { TranslationMode } from "../../model/translationMode"
-import { formatDate, formatTime } from "./utils"
+import {Device, DeviceDto} from "../../model/device"
+import {Role} from "../../model/role"
+import {TranslationMode} from "../../model/translationMode"
+import {formatDate, formatTime} from "./utils"
 
-// const params = {
-//   type: serviceAccount.type,
-//   projectId: serviceAccount.project_id,
-//   privateKeyId: serviceAccount.private_key_id,
-//   privateKey: serviceAccount.private_key,
-//   clientEmail: serviceAccount.client_email,
-//   clientId: serviceAccount.client_id,
-//   authUri: serviceAccount.auth_uri,
-//   tokenUri: serviceAccount.token_uri,
-//   authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-//   clientC509CertUrl: serviceAccount.client_x509_cert_url,
-// }
 
 const getConversation = (messages: any, memberTotal: number) => {
   return {
@@ -32,22 +19,22 @@ const getConversation = (messages: any, memberTotal: number) => {
 
 const getGuestLanguages = (messages: any) => {
   return messages
-    .filter((item: any) => item.role === Role.GUEST)
-    .filter(
-      (item: any, pos: any, arr: any) =>
-        pos === 0 || item.languageName !== arr[pos - 1].languageName
-    )
-    .map((m: any) => m.languageName)
-    .join(",")
+      .filter((item: any) => item.role === Role.GUEST)
+      .filter(
+          (item: any, pos: any, arr: any) =>
+              pos === 0 || item.languageName !== arr[pos - 1].languageName
+      )
+      .map((m: any) => m.languageName)
+      .join(",")
 }
 
 const getDevice = (members: any, support: string) => {
-  let guestsDevices: Device[] = []
-  let advisorDevice: Device[] = []
+  const guestsDevices: Device[] = []
+  const advisorDevice: Device[] = []
   members.forEach((m: any) => {
     m.role === Role.GUEST && m.device
-      ? guestsDevices.push(mapMemberToDevice(m.device))
-      : advisorDevice.push(mapMemberToDevice(m.device))
+        ? guestsDevices.push(mapMemberToDevice(m.device))
+        : advisorDevice.push(mapMemberToDevice(m.device))
   })
   return {
     support: support,
@@ -71,7 +58,7 @@ const mapMemberToDevice = (device: any) => {
 }
 
 const formatDevice = (devices: Device[]) => {
-  let devicesDto = deviceToDeviceDto(devices)
+  const devicesDto = deviceToDeviceDto(devices)
   return {
     equipment: devicesDto.equipments.join(","),
     os: {
@@ -86,11 +73,11 @@ const formatDevice = (devices: Device[]) => {
 }
 
 const deviceToDeviceDto = (devices: Device[]): DeviceDto => {
-  let equipments: string[] = [],
-    osName: string[] = [],
-    osVersion: string[] = [],
-    browserName: string[] = [],
-    browserVersion: string[] = []
+  const equipments: string[] = [],
+      osName: string[] = [],
+      osVersion: string[] = [],
+      browserName: string[] = [],
+      browserVersion: string[] = []
   devices.forEach((d: Device) => {
     equipments.push(d.equipment)
     osName.push(d.os.name)
@@ -115,13 +102,13 @@ const getDuration = (lastMessageTime: string, firstMessageTime: string) => {
   const l = lastMessageTime.split(":")
   const f = firstMessageTime.split(":")
   const nbSeconds =
-    Number(l[0]) * 3600 +
-    Number(l[1]) * 60 -
-    (Number(f[0]) * 3600 + Number(f[1]) * 60)
+      Number(l[0]) * 3600 +
+      Number(l[1]) * 60 -
+      (Number(f[0]) * 3600 + Number(f[1]) * 60)
   return (
-    formatNumber((nbSeconds / 3600) | 0) +
-    "h" +
-    formatNumber(((nbSeconds % 3600) / 60) | 0)
+      formatNumber((nbSeconds / 3600) | 0) +
+      "h" +
+      formatNumber(((nbSeconds % 3600) / 60) | 0)
   )
 }
 
@@ -133,15 +120,19 @@ const getTranslationMode = (messages: any[]) => {
   ]
   let i = 1
   const textNone: boolean =
-    messages.find(
-      (message) => message.translationMode !== TranslationMode.TEXT
-    ) !== undefined
+      messages.find(
+          (message) => message.translationMode !== TranslationMode.TEXT
+      ) !== undefined
   const vocalNone: boolean =
-    messages.find(
-      (message) => message.translationMode !== TranslationMode.VOICE
-    ) !== undefined
-  if (textNone) i += 1
-  if (vocalNone) i -= 1
+      messages.find(
+          (message) => message.translationMode !== TranslationMode.VOICE
+      ) !== undefined
+  if (textNone) {
+    i += 1
+  }
+  if (vocalNone) {
+    i -= 1
+  }
   return mode[i]
 }
 
@@ -169,29 +160,23 @@ const getMessagesData = (elements: any) => {
 
 const kpiOnDb = async (data: any, roomId: string) => {
   if (!admin.apps.length) {
-    admin.initializeApp({
-      // credential: admin.credential.cert(params),
-      // databaseURL: serviceAccount.url,
-    })
+    admin.initializeApp({})
   }
-  return await admin.firestore().collection("kpis").doc(roomId).set(data)
+  return admin.firestore().collection("kpis").doc(roomId).set(data)
 }
 
 const retrieveKpi = async () => {
   if (!admin.apps.length) {
-    admin.initializeApp({
-      // credential: admin.credential.cert(params),
-      // databaseURL: serviceAccount.url,
-    })
+    admin.initializeApp({})
   }
-  return await admin
-    .firestore()
-    .collection("kpis")
-    .orderBy("day", "desc")
-    .get()
-    .then((res) => {
-      return buildKpis(res)
-    })
+  return admin
+      .firestore()
+      .collection("kpis")
+      .orderBy("day", "desc")
+      .get()
+      .then((res) => {
+        return buildKpis(res)
+      })
 }
 
 const buildKpis = (res: any) => {
@@ -205,32 +190,29 @@ const buildKpis = (res: any) => {
 }
 
 export const getKpi = async () => {
-  return await retrieveKpi()
+  return retrieveKpi()
 }
 
 export const launchCron = async () => {
   const job = new CronJob(
-    "* 12,17 * * *",
-    async () => {
-      if (!admin.apps.length) {
-        admin.initializeApp({
-          // credential: admin.credential.cert(params),
-          // databaseURL: serviceAccount.url,
-        })
-      }
-      await admin
-        .database()
-        .ref("chats")
-        .once("value")
-        .then(async (snapshot: any) => {
-          const chats = snapshot?.val()
-          await createkpis(chats)
-        })
-      await admin.database().ref("chats").remove()
-    },
-    null,
-    true,
-    "Europe/Paris"
+      "* 12,17 * * *",
+      async () => {
+        if (!admin.apps.length) {
+          admin.initializeApp({})
+        }
+        await admin
+            .database()
+            .ref("chats")
+            .once("value")
+            .then(async (snapshot: any) => {
+              const chats = snapshot?.val()
+              await createkpis(chats)
+            })
+        await admin.database().ref("chats").remove()
+      },
+      null,
+      true,
+      "Europe/Paris"
   )
   job.start()
 }
@@ -247,7 +229,7 @@ const createkpis = async (chats: any) => {
         const messages = chat.messages ? getMessagesData(chat.messages) : []
         const members = getMembers(chat.members)
         const conversation =
-          messages.length > 0 ? getConversation(messages, members.length) : {}
+            messages.length > 0 ? getConversation(messages, members.length) : {}
         const device = getDevice(members, chat.support)
         const kpi = {
           day: new Date(messages[0].date),

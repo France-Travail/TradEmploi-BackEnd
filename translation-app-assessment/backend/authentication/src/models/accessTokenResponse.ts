@@ -1,4 +1,4 @@
-export interface accessTokenResponse {
+export interface AccessTokenResponse {
   access_token: string;
   refresh_token: string;
   scope: string;
@@ -7,4 +7,5 @@ export interface accessTokenResponse {
   expire_in: number;
   nonce: string;
 }
+
 

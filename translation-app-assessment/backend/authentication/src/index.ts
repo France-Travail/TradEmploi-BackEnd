@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express"
-import { accessTokenResponse } from "./models/accessTokenResponse"
-import { callBackResponse } from "./models/callBackResponse"
+import { AccessTokenResponse } from "./models/accessTokenResponse"
+import { CallBackResponse } from "./models/callBackResponse"
 import { getAccessToken } from "./utils/getAccessToken"
 import { getTokenInfo, isTokenValid } from "./utils/getTokenInfo"
 import { getUserInfo } from "./utils/getUserInfo"
@@ -9,10 +9,8 @@ const cors = require('cors')
 const app: Express = express()
 const port = 8080
 
-// CORS options
 const corsOptions = {
-  //origin: /https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/,
-   origin: [/https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/, 'http://localhost:4200'], ///enable localhost during dev
+   origin: [process.env.AUTHORIZED_DOMAIN],
   methods: ['GET', 'POST'],
   maxAge: 3600
 }
@@ -21,8 +19,8 @@ app.disable('x-powered-by')
 
 
 app.get("/callback", async (req: Request, res: Response) => {
-  const codeResp: callBackResponse = req.query as unknown as callBackResponse
-  const accessToken: accessTokenResponse | void = await getAccessToken(codeResp)
+  const codeResp: CallBackResponse = req.query as unknown as CallBackResponse
+  const accessToken: AccessTokenResponse | void = await getAccessToken(codeResp)
   if (accessToken) {
     res.redirect(
       302,
