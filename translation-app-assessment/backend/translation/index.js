@@ -1,14 +1,9 @@
-// Copyright 2020 Google LLC. This software is provided as-is, without warranty
-// or representation for any use or purpose. Your use of it is subject to your
-// agreement with Google.
-
 'use strict'
 const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 // Imports the Google Cloud Translation library
 const {TranslationServiceClient} = require('@google-cloud/translate');
-// Init express.js app
 const app = express()
 app.disable('x-powered-by')
 app.use(bodyParser.json())
@@ -21,7 +16,7 @@ const apiEndpoint = 'translate-eu.googleapis.com'
 
 
 app.post('/', async (req, res) => {
-  const translatedText = await translateText(req.body.projectId, req.body.text, req.body.targetLanguageCode);
+  const translatedText = await translateText(req.body.projectId, req.body.text, req.body.targetLanguageCode, req.body.sourceLanguageCode);
   const response = {
     status: 200,
     translatedText
@@ -35,21 +30,20 @@ app.listen(port, () => {
 })
 
 
-// Instantiates a client
 const clientOptions = {apiEndpoint};
 const translationClient = new TranslationServiceClient(clientOptions);
 
 
-async function translateText(projectId, text, targetLanguageCode) {
-  // Construct request
+async function translateText(projectId, text, targetLanguageCode, sourceLanguageCode) {
+
   const request = {
     parent: `projects/${projectId}/locations/${location}`,
     contents: [text],
-    mimeType: 'text/plain', // mime types: text/plain, text/html
+    mimeType: 'text/plain',
+    sourceLanguageCode,
     targetLanguageCode
   };
 
-  // Run request
   const [response] = await translationClient.translateText(request);
 
   return response.translations[0].translatedText;
