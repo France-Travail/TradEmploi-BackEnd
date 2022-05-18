@@ -21,6 +21,7 @@ app.disable("x-powered-by")
 
 app.get("/callback", async (req: Request, res: Response) => {
   const host = req.get("host")
+  console.log(host)
   const redirectFront =
     host === process.env.HOST_ETAB
       ? process.env.REDIRECT_URI_FRONT_ETAB
