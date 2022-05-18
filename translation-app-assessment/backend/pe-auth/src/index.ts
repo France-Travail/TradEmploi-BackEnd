@@ -19,18 +19,12 @@ app.use(cors(corsOptions))
 app.disable("x-powered-by")
 
 app.get("/callback", async (req: Request, res: Response) => {
-  const host = req.get("host")
-  console.log(host)
-  const redirectFront =
-    host === process.env.HOST_ETAB
-      ? process.env.REDIRECT_URI_FRONT_ETAB
-      : process.env.REDIRECT_URI_FRONT
   const codeResp: callBackResponse = req.query as unknown as callBackResponse
   const accessToken: accessTokenResponse | void = await getAccessToken(codeResp)
   if (accessToken) {
     res.redirect(
       302,
-      `${redirectFront}?access_token=${accessToken.access_token}&state=${codeResp.state}`
+      `${process.env.REDIRECT_URI_FRONT}?access_token=${accessToken.access_token}&state=${codeResp.state}`
     )
   } else {
     res.status(501).send("Internal error")
