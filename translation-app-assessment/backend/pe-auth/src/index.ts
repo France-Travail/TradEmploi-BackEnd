@@ -12,7 +12,6 @@ const port = 8080
 // CORS options
 const corsOptions = {
   origin: /https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/,
-  //origin: [/https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/, 'http://localhost:4200'], ///enable localhost during dev
   methods: ["GET", "POST"],
   maxAge: 3600,
 }
@@ -21,6 +20,7 @@ app.disable("x-powered-by")
 
 app.get("/callback", async (req: Request, res: Response) => {
   const host = req.get("host")
+  console.log(host)
   const redirectFront =
     host === process.env.HOST_ETAB
       ? process.env.REDIRECT_URI_FRONT_ETAB
