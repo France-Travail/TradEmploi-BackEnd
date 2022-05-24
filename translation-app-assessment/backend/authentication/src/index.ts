@@ -10,7 +10,7 @@ const app: Express = express()
 const port = 8080
 
 const corsOptions = {
-   origin: [process.env.AUTHORIZED_DOMAIN],
+  origin: [/https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/, 'http://localhost:4200'], ///enable localhost during dev
   methods: ['GET', 'POST'],
   maxAge: 3600
 }
@@ -23,8 +23,8 @@ app.get("/callback", async (req: Request, res: Response) => {
   const accessToken: AccessTokenResponse | void = await getAccessToken(codeResp)
   if (accessToken) {
     res.redirect(
-      302,
-      `${process.env.REDIRECT_URI_FRONT}?access_token=${accessToken.access_token}&state=${codeResp.state}`
+        302,
+        `${process.env.REDIRECT_URI_FRONT}?access_token=${accessToken.access_token}&state=${codeResp.state}`
     )
   } else {
     res.status(501).send("Internal error")

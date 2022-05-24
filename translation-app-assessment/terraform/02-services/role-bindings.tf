@@ -38,6 +38,13 @@ resource "google_project_iam_member" "cleanup_monitoring_role" {
   member  = "serviceAccount:${google_service_account.cleanup_sa.email}"
 }
 
+# Allow translation service to use the Cloud Translation API
+resource "google_project_iam_member" "translation_api_user_role" {
+  project = var.project_id
+  role    = "roles/cloudtranslate.user"
+  member  = "serviceAccount:${google_service_account.translation_sa.email}"
+}
+
 # Allow token broker service to generate tokens on behalf of the client guest service account
 resource "google_service_account_iam_member" "client_guest_token_creator" {
   service_account_id = google_service_account.client_guest_sa.id
@@ -76,6 +83,22 @@ resource "google_cloud_run_service_iam_member" "telemetry" {
   member = "serviceAccount:${google_service_account.api_gateway_sa.email}"
 }
 
+resource "google_cloud_run_service_iam_member" "translation" {
+  location = google_cloud_run_service.translation.location
+  project = google_cloud_run_service.translation.project
+  service = google_cloud_run_service.translation.name
+  role = "roles/run.invoker"
+  member = "serviceAccount:${google_service_account.api_gateway_sa.email}"
+}
+
+# Allow unauthenticated users to invoke the Authentication service
+resource "google_cloud_run_service_iam_member" "authentication" {
+  location = google_cloud_run_service.authentication.location
+  project = google_cloud_run_service.authentication.project
+  service = google_cloud_run_service.authentication.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
 
 # allow Cleanup Job Service Account to invoke Cleanup Cloud Run service
 resource "google_cloud_run_service_iam_member" "cleanup" {
@@ -96,13 +119,17 @@ locals {
     google_cloud_run_service.token_broker.name,
     google_cloud_run_service.reporting.name,
     google_cloud_run_service.telemetry.name,
-    google_cloud_run_service.cleanup.name
+    google_cloud_run_service.cleanup.name,
+    google_cloud_run_service.translation.name,
+    google_cloud_run_service.authentication.name
   ]
   cloud_run_service_account_ids = [
     google_service_account.token_broker_sa.account_id,
     google_service_account.cleanup_sa.account_id,
     google_service_account.reporting_sa.account_id,
-    google_service_account.telemetry_sa.account_id
+    google_service_account.telemetry_sa.account_id,
+    google_service_account.translation_sa.account_id,
+    google_service_account.authentication_sa.account_id
   ]
 }
 

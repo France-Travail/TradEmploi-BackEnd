@@ -33,7 +33,7 @@ const resolverFunctions = {
     Mutation: {
         login: (_: any, key: string) => {
             const json = JSON.stringify(key)
-            const login = JSON.parse(json),
+            const login = JSON.parse(json)
             return Buffer.from(login.key).toString('base64');
         }
     }

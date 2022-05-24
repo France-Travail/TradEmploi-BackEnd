@@ -88,4 +88,39 @@ resource "google_cloud_run_service" "cleanup" {
     }
   }
 }
+resource "google_cloud_run_service" "translation" {
+  name     = "pe-translation"
+  location = var.region
+  project  = var.project_id
 
+  template {
+    spec {
+      service_account_name = google_service_account.translation_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/pe-translation:v1"
+        env {
+          name  = "GCP_PROJECT"
+          value = var.project_id
+        }
+      }
+    }
+  }
+}
+resource "google_cloud_run_service" "authentication" {
+  name     = "pe-authentication"
+  location = var.region
+  project  = var.project_id
+
+  template {
+    spec {
+      service_account_name = google_service_account.authentication_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/pe-authentication:v1"
+        env {
+          name  = "GCP_PROJECT"
+          value = var.project_id
+        }
+      }
+    }
+  }
+}

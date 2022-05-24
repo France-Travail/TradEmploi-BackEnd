@@ -4,67 +4,21 @@ before_script:
   - gcloud config set project $GCP_PROJECT
 stages:
   - deploy
-
-deploy-translation:
+deploy-job:
   stage: deploy
   environment:
     name: staging
   script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/translation
     - gcloud builds submit .
-  only:
-    refs:
-      - develop
-
-deploy-reporting:
-  stage: deploy
-  environment:
-    name: staging
-  script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
     - gcloud builds submit .
-  only:
-    refs:
-      - develop
-
-deploy-token-broker:
-  stage: deploy
-  environment:
-    name: staging
-  script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
     - gcloud builds submit .
-  only:
-    refs:
-      - develop
-
-deploy-cleanup:
-  stage: deploy
-  environment:
-    name: staging
-  script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
     - gcloud builds submit .
-  only:
-    refs:
-      - develop
-
-deploy-telemetry:
-  stage: deploy
-  environment:
-    name: staging
-  script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
     - gcloud builds submit .
-  only:
-    refs:
-      - develop
-
-deploy-authentication:
-  stage: deploy
-  environment:
-    name: staging
-  script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/authentication
     - gcloud builds submit .
   only:
