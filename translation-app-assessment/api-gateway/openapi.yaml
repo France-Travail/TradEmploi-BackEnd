@@ -35,7 +35,6 @@ paths:
           schema:
             type: string
   /reporting:
-    # http -v post https://pe-api-gw-ba7o489.ew.gateway.dev/reporting Authorization:"Bearer $TOKEN" query="query rates {rates{day, hour, language, facilityGrade, efficientGrade, offerLinked, comment}}"
     post:
       summary: Reporting endpoing (GraphQL)
       operationId: reporting-post
@@ -109,7 +108,68 @@ paths:
           description: A successful response
           schema:
             type: string
-
+  /translation:
+    post:
+      summary: Translation v3 api endpoing
+      operationId: translation-v3--post
+      x-google-backend:
+        address: ${translation_url}
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+      security:
+        - admin-sa: [ ]
+        - guest-sa: [ ]
+    options:
+      summary: CORS
+      operationId: translation-v3--options
+      x-google-backend:
+        address: ${token_broker_url}
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
+  /callback:
+    get:
+      summary: Authentication api callback endpoint
+      operationId: callback--get
+      x-google-backend:
+        address: ${authentication_url}/callback
+      responses:
+        '200':
+          description: A callback response
+          schema:
+            type: string
+    options:
+      summary: CORS
+      operationId: callback--options
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
+  /tokeninfo:
+    get:
+      summary: Authentication api tokeninfo endpoint
+      operationId: tokeninfo--get
+      x-google-backend:
+        address: ${authentication_url}/tokeninfo
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+    options:
+      summary: CORS
+      operationId: tokeninfo--options
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
 securityDefinitions:
   admin-sa:
     authorizationUrl: ""

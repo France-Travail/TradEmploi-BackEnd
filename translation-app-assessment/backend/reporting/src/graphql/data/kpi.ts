@@ -105,11 +105,7 @@ const getDuration = (lastMessageTime: string, firstMessageTime: string) => {
       Number(l[0]) * 3600 +
       Number(l[1]) * 60 -
       (Number(f[0]) * 3600 + Number(f[1]) * 60)
-  return (
-      formatNumber((nbSeconds / 3600) | 0) +
-      "h" +
-      formatNumber(((nbSeconds % 3600) / 60) | 0)
-  )
+  return `${formatNumber((nbSeconds / 3600) | 0)}h${formatNumber(((nbSeconds % 3600) / 60) | 0)}`
 }
 
 const getTranslationMode = (messages: any[]) => {

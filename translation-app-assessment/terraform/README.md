@@ -26,6 +26,9 @@ This directory contains the following subdirectories:
 Here are the first few steps that you need to take:
 
 1. Make sure you have downloaded and set up recent versions of both Terraform and the Cloud SDK.
+   [install sdk](https://cloud.google.com/sdk/docs/install)
+
+
 2. Create a new GCP project and link it to a billing account.
 3. Create a storage bucket to keep remote Terraform state in. This allows different engineers to be able to run Terraform and get consistent results, as opposed to storing it on someone's local machine and relying on that machine for all Terraform operations.
 
@@ -38,7 +41,8 @@ Here are the first few steps that you need to take:
     Replace `$GCP_PROJECT` above with the project where you would like to create the state bucket. This can be the new projet you just created, or it could be a separate project you use just for this purpose.
 
     Replace `$BUCKET_NAME` above with the name you would like to give your bucket. This name needs to be universally unique and DNS-friendly (lower case letters, numbers, hyphens). For example: `pe-trad-tf-state`.
-     
+    
+    Replace the Pôle Emploi tags, regex, labels and namespace with the name you would like to give, in those files: [index.ts](../backend/authentication/src/index.ts), cloudbuild.yaml, rules.txt, 
 
 4. Edit the config.tf and terraform.tfvars files in each dir (01-project-setup, 02-services, and 03-monitoring) to reflect the following changes:
     - In the config.tf file, change the value of `bucket` to be the name of the bucket you just created in the previous step.
@@ -107,7 +111,10 @@ Only move to the next step if Terraform finished without any errors.
 
 ### Apply 03-monitoring
 
-In order to apply this last set of Terraform templates, it's necessary to perform some steps first. These templates contain notification channels (who to notify) and alerts (what to notify on) that get raised when metrics go beyond a certain threshold. It depends on two things: 1) your project needs to have an active monitoring workspace and 2) there needs to exist at least one datapoint of the involved metrics (in our case the cleanup metric, meaning we need to run cleanup at least once).
+In order to apply this last set of Terraform templates, it's necessary to perform some steps first. These templates contain notification channels (who to notify) and alerts (what to notify on) that get raised when metrics go beyond a certain threshold.
+It depends on two things: 
+1) your project needs to have an active monitoring workspace and 
+2) there needs to exist at least one datapoint of the involved metrics (in our case the cleanup metric, meaning we need to run cleanup at least once).
 
 Here are the exact steps to follow before running Terraform:
 1. Open the GCP console and go to the `Monitoring` service. You'll be asked to create a new monitoring workspace or add this project to an existing workspace. If unsure, create a new workspace. If reusing an existing workspace, note its name as you'll need to give it to Terraform as input. 
