@@ -23,7 +23,9 @@ In the Firebase console, click Authentication from the navigation panel.
 
 Go to the Sign-in Method tab.
 
-Enable Email/Password and the anonymous authentication, for example: ![img.png](./images/img4.png)
+Enable Email/Password and the anonymous authentication, for example:
+
+![img.png](./images/img4.png)
 
 Add Firebase to your app by following the web guide.
 
