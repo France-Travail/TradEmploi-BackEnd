@@ -20,7 +20,7 @@ deploy-job:
     - gcloud builds submit .
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
     - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/pe-authentication
+    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/authentication
     - gcloud builds submit .
   only:
     refs:
