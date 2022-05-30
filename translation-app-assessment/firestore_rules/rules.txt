@@ -1,0 +1,55 @@
+resource "google_firestore_security_rules" "public_read" {
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdvisor() {
+      // consider advisor to be users with email addresses
+      // for extra safety, specify matching domain name(s)
+      return
+        request.auth.token.email.matches('.*@pole-emploi[.]fr$') ||
+        request.auth.token.email.matches('.*@pe[.]fr$') ||
+        request.auth.token.email.matches('agent@pe[.]fr$')
+    }
+    function canReadChat() {
+      // chats can only be read before their expiry date
+      // admins can read any chat while guesta can only read their own
+      return
+        (isAdvisor() || {'id': request.auth.uid, 'status':true} in resource.data.guests);
+    }
+    function canUpdateChat() {
+      // only allow writing specific fields (messages ATM, others in the future)
+      // this is important b/c it protects fields like guestId or expiryDate that could be attacked
+      return canReadChat() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+          ['lasttime','active','support','members','messages', 'monoToMultiTime', 'guests']
+        );
+    }
+    function canDeleteChat() {
+      // only allow admins to delete chats and only if they're empty (no guest, no messages)
+      return isAdvisor() && !resource.data.keys.hasAny(['messages'])
+    }
+    match /kpis/{kpi} {
+      allow read: if isAdvisor();
+    }
+    match /ratings/{rating} {
+      allow read: if isAdvisor();
+    }
+    match /rates/{rate} {
+      allow read, write: if isAdvisor();
+    }
+    match /errors/{error} {
+      allow create: if isAdvisor();
+    }
+    match /chats/{chat} {
+      allow get: if canReadChat();
+      allow update: if canUpdateChat();
+      allow create: if isAdvisor();
+      allow delete: if canDeleteChat();
+    }
+    match /languages/{language} {
+      allow read, write: if isAdvisor();
+    }
+  }
+}
+}

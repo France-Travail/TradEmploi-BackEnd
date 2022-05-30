@@ -1,10 +1,6 @@
 export const formatTime = (time: string) => {
   const timeArray = time.split(":")
-  return (
-    formatNumber(Number(timeArray[0]) | 0) +
-    "h" +
-    formatNumber(Number(timeArray[1]) | 0)
-  )
+   return `${formatNumber(Number(timeArray[0]) | 0)}h${formatNumber(Number(timeArray[1]) | 0)}`;
 }
 
 export const formatNumber = (n: any) => {
@@ -12,5 +8,5 @@ export const formatNumber = (n: any) => {
 }
 
 export const formatDate = (day: Date) => {
-  return day.getDate() + "/" + (day.getMonth() + 1) + "/" + day.getFullYear()
+  return `${day.getDate()}/${day.getMonth()+1}/${day.getFullYear()}`;
 }

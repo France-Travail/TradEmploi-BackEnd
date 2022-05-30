@@ -6,7 +6,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "aiestaran-pe-state"
+    bucket = "pe-trad-tf-state"
     prefix = "pe-trad/03-monitoring"
   }
 }

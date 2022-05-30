@@ -1,27 +1,12 @@
 import * as admin from "firebase-admin"
-// import * as serviceAccount from "../../credentials/credentials.json"
 import {formatDate} from "../data/utils"
-// const params = {
-//   type: serviceAccount.type,
-//   projectId: serviceAccount.project_id,
-//   privateKeyId: serviceAccount.private_key_id,
-//   privateKey: serviceAccount.private_key,
-//   clientEmail: serviceAccount.client_email,
-//   clientId: serviceAccount.client_id,
-//   authUri: serviceAccount.auth_uri,
-//   tokenUri: serviceAccount.token_uri,
-//   authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-//   clientC509CertUrl: serviceAccount.client_x509_cert_url,
-// }
 
 export const rates = async () => {
   if (!admin.apps.length) {
     admin.initializeApp({
-      // credential: admin.credential.cert(params),
-      // databaseURL: serviceAccount.url,
     })
   }
-  return await admin
+  return admin
     .firestore()
     .collection("rates")
     .orderBy("date", "desc")
@@ -31,11 +16,11 @@ export const rates = async () => {
     })
 }
 
-export const rate = async (language: String) => {
+export const rate = async (language: string) => {
   if (!admin.apps.length) {
     admin.initializeApp({})
   }
-  return await admin
+  return admin
     .firestore()
     .collection("rates")
     .orderBy("date", "desc")
@@ -46,45 +31,45 @@ export const rate = async (language: String) => {
 }
 
 const buildRates = (res: any) => {
-  const rates = [{}]
+  const result = [{}]
   res.forEach((doc: any) => {
     const data = doc.data()
-    const rate = buildRate(data)
-    rates.push(rate)
+    const r = buildRate(data)
+    result.push(r)
   })
-  return rates.splice(1)
+  return result.splice(1)
 }
 
-const buildRatesByLanguage = (res: any, language: String) => {
-  const rates = [{}]
+const buildRatesByLanguage = (res: any, language: string) => {
+  const result = [{}]
   res.forEach((doc: any) => {
     const data = doc.data()
     if (language === data.language) {
-      const rate = buildRate(data)
-      rates.push(rate)
+      const r = buildRate(data)
+      result.push(r)
     }
   })
-  return rates.splice(1)
+  return result.splice(1)
 }
 
-const buildRate = (rate: any) => {
-  const day: Date = rate.date.toDate()
+const buildRate = (r: any) => {
+  const day: Date = r.date.toDate()
   return {
     day: formatDate(day),
-    hour: rate.hour,
-    language: rate.language ? rate.language : "Français",
+    hour: r.hour,
+    language: r.language ? r.language : "Français",
     facilityGrade:
-        rate.grades && rate.grades.length > 0 ? rate.grades[0] : "-1",
+        r.grades && r.grades.length > 0 ? r.grades[0] : "-1",
     efficientGrade:
-        rate.grades && rate.grades.length > 0 ? rate.grades[1] : "-1",
-    offerLinked: rate.offerLinked ? rate.offerLinked : "",
-    comment: rate.comment ? rate.comment.replace(/\r?\n|\r/g, "") : "",
-    conversationDuration: rate.conversationDuration ? rate.conversationDuration : "",
-    typeEntretien: rate.typeEntretien ? rate.typeEntretien : "",
-    nbMessagesAdvisor: rate.nbMessagesAdvisor ? rate.nbMessagesAdvisor : 0,
-    nbMessagesGuest: rate.nbMessagesGuest ? rate.nbMessagesGuest : 0,
-    user: rate.user ? rate.user : "",
-    agency: rate.agency ? rate.agency : "",
-    typeSTT: rate.typeSTT ? rate.typeSTT: ""
+        r.grades && r.grades.length > 0 ? r.grades[1] : "-1",
+    offerLinked: r.offerLinked ? r.offerLinked : "",
+    comment: r.comment ? r.comment.replace(/\r?\n|\r/g, "") : "",
+    conversationDuration: r.conversationDuration ? r.conversationDuration : "",
+    typeEntretien: r.typeEntretien ? r.typeEntretien : "",
+    nbMessagesAdvisor: r.nbMessagesAdvisor ? r.nbMessagesAdvisor : 0,
+    nbMessagesGuest: r.nbMessagesGuest ? r.nbMessagesGuest : 0,
+    user: r.user ? r.user : "",
+    agency: r.agency ? r.agency : "",
+    typeSTT: r.typeSTT ? r.typeSTT: ""
   }
 }

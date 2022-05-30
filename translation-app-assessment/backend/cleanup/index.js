@@ -21,47 +21,47 @@ const firestore = firebaseAdmin.firestore()
 
 // Function to write monitoring "heartbeat" that cleanup has run
 const writeMonitoring = async () => {
-  const monitoringOptions = {
-    projectId: projectId
-  }
-  const monitoring = new Monitoring.MetricServiceClient(monitoringOptions)
-
-  const dataPoint = {
-    interval: {
-      endTime: {
-        seconds: Moment().format('X')
-      }
-    },
-    value: {
-      int64Value: 1
+    const monitoringOptions = {
+        projectId: projectId
     }
-  }
+    const monitoring = new Monitoring.MetricServiceClient(monitoringOptions)
 
-  const timeSeriesData = {
-    metric: {
-      type: 'custom.googleapis.com/cleanup_heartbeat'
-    },
-    resource: {
-      type: 'generic_task',
-      labels: {
-        project_id: projectId,
-        task_id: 'cleanup',
-        location: process.env.LOCATION || 'global',
-        namespace: 'pole-emploi',
-        job: 'cleanup'
-      }
-    },
-    points: [dataPoint]
-  }
+    const dataPoint = {
+        interval: {
+            endTime: {
+                seconds: Moment().format('X')
+            }
+        },
+        value: {
+            int64Value: 1
+        }
+    }
 
-  const request = {
-    name: monitoring.projectPath(projectId),
-    timeSeries: [timeSeriesData]
-  }
-  return monitoring.createTimeSeries(request)
+    const timeSeriesData = {
+        metric: {
+            type: 'custom.googleapis.com/cleanup_heartbeat'
+        },
+        resource: {
+            type: 'generic_task',
+            labels: {
+                project_id: projectId,
+                task_id: 'cleanup',
+                location: process.env.LOCATION || 'global',
+                namespace: 'pole-emploi',
+                job: 'cleanup'
+            }
+        },
+        points: [dataPoint]
+    }
+
+    const request = {
+        name: monitoring.projectPath(projectId),
+        timeSeries: [timeSeriesData]
+    }
+    return monitoring.createTimeSeries(request)
 }
 app.get('/', async (req, res) => {
-  console.log("hello");
+    console.log("hello");
 })
 
 app.post('/', async (req, res) => {
@@ -85,10 +85,10 @@ app.post('/', async (req, res) => {
 
 const port = process.env.PORT || 8080
 app.listen(port, () => {
-  console.log(`listening on port ${port}`)
+    console.log(`listening on port ${port}`)
 })
 
-async function cleanRates(){
+async function cleanRates() {
     // Delete rates created by the end to end tests robot SD34N140
     const deletionPromises = []
     const collection = firestore.collection('rates')
@@ -100,216 +100,213 @@ async function cleanRates(){
     await Promise.all(deletionPromises)
 }
 
-async function kpi(){
-  const roomsReference = await firestore.collection('chats')
-  await roomsReference.get()
-      .then((querySnapshot) => {
-          createKpis(querySnapshot)
-      })
-  // await admin.database().ref("chats").remove()
+async function kpi() {
+    const roomsReference = await firestore.collection('chats')
+    await roomsReference.get()
+        .then((querySnapshot) => {
+            createKpis(querySnapshot)
+        })
+    // await admin.database().ref("chats").remove()
 }
 
 const createKpis = (querySnapshot) => {
-  querySnapshot.forEach(async (doc) => {
-      const data = doc.data()
-      const kpi = buildkpi(data, doc.id)
-      if(kpi != {}){
-        await kpiOnDb(kpi, doc.id)
-      }
-  })
+    querySnapshot.forEach(async (doc) => {
+        const data = doc.data()
+        const result = buildkpi(data, doc.id)
+        if (result !== {}) {
+            await kpiOnDb(result, doc.id)
+        }
+    })
 }
 
 const buildkpi = (chat, roomId) => {
-  const messages = chat.messages ? getMessagesData(chat.messages) : []
-  const members = getMembers(chat.members)
-  const conversation =
-      messages.length > 0 ? getConversation(messages, members.length) : {}
-  const device = getDevice(members, chat.support)
-  return messages.length > 0 ? {
-      day: new Date(messages[0].date),
-      roomId: roomId,
-      conversation: conversation,
-      device: device,
-  }
-  :{}
+    const messages = chat.messages ? getMessagesData(chat.messages) : []
+    const members = getMembers(chat.members)
+    const conversation =
+        messages.length > 0 ? getConversation(messages, members.length) : {}
+    const device = getDevice(members, chat.support)
+    return messages.length > 0 ? {
+            day: new Date(messages[0].date),
+            roomId: roomId,
+            conversation: conversation,
+            device: device,
+        }
+        : {}
 }
 
 const getMessagesData = (elements) => {
-  const element = []
-  for (const prop in elements) {
-      const temp = elements[prop]
-      if (temp && temp.message) {
-          element.push(temp.message)
-      }
-  }
-  return element
+    const element = []
+    for (const prop in elements) {
+        const temp = elements[prop]
+        if (temp && temp.message) {
+            element.push(temp.message)
+        }
+    }
+    return element
 }
 
 const kpiOnDb = async (data, roomId) => {
-  const roomsReference = await firestore.collection('kpis').doc(roomId)
-  return await roomsReference.set(data)
+    const roomsReference = await firestore.collection('kpis').doc(roomId)
+    return roomsReference.set(data)
 }
 
 const getMembers = (elements) => {
-  const element = []
-  for (const prop in elements) {
-      const temp = elements[prop]
-      if (temp) {
-          element.push(temp)
-      }
-  }
-  return element
+    const element = []
+    for (const prop in elements) {
+        const temp = elements[prop]
+        if (temp) {
+            element.push(temp)
+        }
+    }
+    return element
 }
 
 const getConversation = (messages, memberTotal) => {
-  return {
-      begin: formatTime(messages[0].hour),
-      end: formatTime(messages[messages.length - 1].hour),
-      duration: getDuration(messages[messages.length - 1].hour, messages[0].hour),
-      languages: getGuestLanguages(messages),
-      nbUsers: memberTotal,
-      translationMode: getTranslationMode(messages),
-  }
+    return {
+        begin: formatTime(messages[0].hour),
+        end: formatTime(messages[messages.length - 1].hour),
+        duration: getDuration(messages[messages.length - 1].hour, messages[0].hour),
+        languages: getGuestLanguages(messages),
+        nbUsers: memberTotal,
+        translationMode: getTranslationMode(messages),
+    }
 }
 
 const getDuration = (lastMessageTime, firstMessageTime) => {
-  const l = lastMessageTime.split(":")
-  const f = firstMessageTime.split(":")
-  const nbSeconds =
-    Number(l[0]) * 3600 +
-    Number(l[1]) * 60 -
-    (Number(f[0]) * 3600 + Number(f[1]) * 60)
-  return (
-    formatNumber((nbSeconds / 3600) | 0) +
-    "h" +
-    formatNumber(((nbSeconds % 3600) / 60) | 0)
-  )
+    const l = lastMessageTime.split(":")
+    const f = firstMessageTime.split(":")
+    const nbSeconds =
+        Number(l[0]) * 3600 +
+        Number(l[1]) * 60 -
+        (Number(f[0]) * 3600 + Number(f[1]) * 60)
+    return `${formatNumber((nbSeconds / 3600) | 0)}h${formatNumber(((nbSeconds % 3600) / 60) | 0)}`
 }
 
 const getTranslationMode = (messages) => {
-  const mode = [
-    'Texte',
-    'Voix et Texte',
-    'Voix',
-  ]
-  let i = 1
-  const textNone =
-    messages.find(
-      (message) => message.translationMode !== 'Texte'
-    ) !== undefined
-  const vocalNone =
-    messages.find(
-      (message) => message.translationMode !== 'Voix'
-    ) !== undefined
-  if (textNone) i += 1
-  if (vocalNone) i -= 1
-  return mode[i]
+    const mode = [
+        'Texte',
+        'Voix et Texte',
+        'Voix',
+    ]
+    let i = 1
+    const textNone =
+        messages.find(
+            (message) => message.translationMode !== 'Texte'
+        ) !== undefined
+    const vocalNone =
+        messages.find(
+            (message) => message.translationMode !== 'Voix'
+        ) !== undefined
+    if (textNone) {
+        i += 1
+    }
+    if (vocalNone) {
+        i -= 1
+    }
+    return mode[i]
 }
 
 
 const getGuestLanguages = (messages) => {
-  return messages
-    .filter((item) => item.role === 'DE')
-    .filter(
-      (item, pos, arr) =>
-        pos === 0 || item.languageName !== arr[pos - 1].languageName
-    )
-    .map((m) => m.languageName)
-    .join(",")
+    return messages
+        .filter((item) => item.role === 'DE')
+        .filter(
+            (item, pos, arr) =>
+                pos === 0 || item.languageName !== arr[pos - 1].languageName
+        )
+        .map((m) => m.languageName)
+        .join(",")
 }
 
 const getDevice = (members, support) => {
-  let guestsDevices = []
-  let advisorDevice = []
-  members.forEach((m) => {
-      m.role === 'DE' && m.device
-      ? guestsDevices.push(mapMemberToDevice(m.device))
-      : advisorDevice.push(mapMemberToDevice(m.device))
-  })
-  return {
-      support: support,
-      guest: formatDevice(guestsDevices),
-      advisor: formatDevice(advisorDevice),
-  }
+    const guestsDevices = []
+    const advisorDevice = []
+    members.forEach((m) => {
+        m.role === 'DE' && m.device
+            ? guestsDevices.push(mapMemberToDevice(m.device))
+            : advisorDevice.push(mapMemberToDevice(m.device))
+    })
+    return {
+        support: support,
+        guest: formatDevice(guestsDevices),
+        advisor: formatDevice(advisorDevice),
+    }
 }
 
 
 const formatDevice = (devices) => {
-  let devicesDto = deviceToDeviceDto(devices)
-  return {
-    equipment: devicesDto.equipments.join(","),
-    os: {
-      name: devicesDto.osName.join(","),
-      version: devicesDto.osVersion.join(","),
-    },
-    browser: {
-      name: devicesDto.browserName.join(","),
-      version: devicesDto.browserVersion.join(","),
-    },
-  }
+    const devicesDto = deviceToDeviceDto(devices)
+    return {
+        equipment: devicesDto.equipments.join(","),
+        os: {
+            name: devicesDto.osName.join(","),
+            version: devicesDto.osVersion.join(","),
+        },
+        browser: {
+            name: devicesDto.browserName.join(","),
+            version: devicesDto.browserVersion.join(","),
+        },
+    }
 }
 
 const deviceToDeviceDto = (devices) => {
-  let equipments = [],
-    osName = [],
-    osVersion = [],
-    browserName = [],
-    browserVersion = []
-  devices.forEach((d) => {
-    equipments.push(d.equipment)
-    osName.push(d.os.name)
-    osVersion.push(d.os.version)
-    browserName.push(d.browser.name)
-    browserVersion.push(d.browser.version)
-  })
-  return {
-    equipments: equipments,
-    osName: osName,
-    osVersion: osVersion,
-    browserName: browserName,
-    browserVersion: browserVersion,
-  }
+    const equipments = [],
+        osName = [],
+        osVersion = [],
+        browserName = [],
+        browserVersion = []
+    devices.forEach((d) => {
+        equipments.push(d.equipment)
+        osName.push(d.os.name)
+        osVersion.push(d.os.version)
+        browserName.push(d.browser.name)
+        browserVersion.push(d.browser.version)
+    })
+    return {
+        equipments: equipments,
+        osName: osName,
+        osVersion: osVersion,
+        browserName: browserName,
+        browserVersion: browserVersion,
+    }
 }
 
 
 const mapMemberToDevice = (device) => {
-  return {
-      equipment: device.type,
-      os: {
-          name: device.os,
-          version: device.osVersion,
-      },
-      browser: {
-          name: device.browser,
-          version: device.browserVersion,
-      },
-  }
+    return {
+        equipment: device.type,
+        os: {
+            name: device.os,
+            version: device.osVersion,
+        },
+        browser: {
+            name: device.browser,
+            version: device.browserVersion,
+        },
+    }
 }
 
 const formatTime = (time) => {
-  const timeArray = time.split(":")
-  return (
-    formatNumber(Number(timeArray[0]) | 0) +
-    "h" +
-    formatNumber(Number(timeArray[1]) | 0)
-  )
+    const timeArray = time.split(":")
+    return `${formatNumber(Number(timeArray[0]) | 0)}h${formatNumber(Number(timeArray[1]) | 0)}`
 }
 
 const formatNumber = (n) => {
-  return (n < 10 ? "0" : "") + n
+    return (n < 10 ? "0" : "") + n
 }
 
 
 async function createLanguagesFromRates() {
 
     let languagesSelected = [];
-    let langaugesAverageRate = new Map();
+    const langaugesAverageRate = new Map();
     await firestore.collection("rates").get().then((res) => {
             res.forEach((doc) => {
                 const data = doc.data();
                 const language = data.language + '';
                 const user = data.user + '';
-                if (language && user != 'SD34N140') {
+                const excludedUsers = ['SD34N140'];
+                if (language && !excludedUsers.includes(user)) {
                     languagesSelected = languagesSelected.concat(language.split(','));
                     if (data.grades && data.grades.length > 0) {
                         const grade = data.grades[1];
@@ -337,7 +334,7 @@ async function createLanguage(isoCode, occurrences, average) {
     const data = {
         isoCode: isoCode,
         occurrences: occurrences,
-        average: (average && occurrences) ?(average/occurrences): ''
+        average: (average && occurrences) ? (average / occurrences) : ''
     }
     await firestore.collection("languages").doc(isoCode).set(data)
 }

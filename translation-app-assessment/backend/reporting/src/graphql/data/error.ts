@@ -1,42 +1,26 @@
 import * as admin from "firebase-admin";
-// import * as serviceAccount from "../../credentials/credentials.json";
-import { formatTime } from "./utils";
+import {formatTime} from "./utils";
 
-// const params = {
-//     type: serviceAccount.type,
-//     projectId: serviceAccount.project_id,
-//     privateKeyId: serviceAccount.private_key_id,
-//     privateKey: serviceAccount.private_key,
-//     clientEmail: serviceAccount.client_email,
-//     clientId: serviceAccount.client_id,
-//     authUri: serviceAccount.auth_uri,
-//     tokenUri: serviceAccount.token_uri,
-//     authProviderX509CertUrl: serviceAccount.auth_provider_x509_cert_url,
-//     clientC509CertUrl: serviceAccount.client_x509_cert_url,
-// };
 
-export const error = async (roomId: String) => {
+export const error = async (roomId: string) => {
     if (!admin.apps.length) {
-        admin.initializeApp({
-            // credential: admin.credential.cert(params),
-            // databaseURL: serviceAccount.url,
-        });
+        admin.initializeApp({});
     }
-    return await admin
+    return admin
         .firestore()
         .collection("errors")
-        .where("roomId","==", roomId)
+        .where("roomId", "==", roomId)
         .orderBy("day", "desc")
         .get()
         .then((res) => {
-            return buildErrors(res,roomId)
-        }
-    )
+                return buildErrors(res, roomId)
+            }
+        )
 }
 
-export const errorFormatted = async (roomId: String) => {
+export const errorFormatted = async (roomId: string) => {
     const errors = await error(roomId)
-    if(errors && errors.length > 0){
+    if (errors && errors.length > 0) {
         return getErrorFormatted(errors)
     }
     return {
@@ -46,32 +30,32 @@ export const errorFormatted = async (roomId: String) => {
     }
 }
 
-const buildErrors = (res: any, roomId: String) => {
+const buildErrors = (res: any, roomId: string) => {
     return res.docs
-        .filter((doc:any) => doc.data().roomId === roomId)
+        .filter((doc: any) => doc.data().roomId === roomId)
         .map((err: any) => buildError(err.data()))
 }
 
-const buildError = (error: any) => {
+const buildError = (err: any) => {
     return {
-            roomId: error.roomId,
-            day: error.day,
-            hour: formatTime(error.hour),
-            detail: {
-                code: error.detail.code,
-                description: error.detail.description 
-            }
+        roomId: err.roomId,
+        day: err.day,
+        hour: formatTime(err.hour),
+        detail: {
+            code: err.detail.code,
+            description: err.detail.description
         }
+    }
 }
-const getErrorFormatted = (errors:any) => {
+const getErrorFormatted = (errors: any) => {
     const day = errors[0].day;
-    const kpiError = ['501','503','500','403', '509', '408']
-    const errorKpi = errors.filter((error: any) => kpiError.includes(error.detail.code))
-    const descriptions = errorKpi.map((error:any) =>  error.detail.description).join(',');
-    const hours = errorKpi.map((error:any) => error.hour).join(',');
+    const kpiError = ['501', '503', '500', '403', '509', '408']
+    const errorKpi = errors.filter((err: any) => kpiError.includes(err.detail.code))
+    const descriptions = errorKpi.map((err: any) => err.detail.description).join(',');
+    const hours = errorKpi.map((err: any) => err.hour).join(',');
     return {
-        day: day ? day: '',
-        hours: hours ? hours: '',
-        descriptions: descriptions ? descriptions: ''
+        day: day ? day : '',
+        hours: hours ? hours : '',
+        descriptions: descriptions ? descriptions : ''
     }
 }

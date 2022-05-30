@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
-const { IAMCredentialsClient } = require('@google-cloud/iam-credentials')
+const {IAMCredentialsClient} = require('@google-cloud/iam-credentials')
 
 
 // Init express.js app
@@ -16,13 +16,11 @@ const app = express()
 app.use(bodyParser.json())
 app.disable('x-powered-by')
 
-// CORS options
 const corsOptions = {
-  origin: /https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/,
   methods: ['GET', 'POST', 'PUT'],
   maxAge: 3600
 }
-app.use(cors())
+app.use(cors(corsOptions))
 
 // Init project and services
 const projectId = process.env.GCP_PROJECT
@@ -43,7 +41,7 @@ const serviceAccounts = {
 
 const apiGatewayAudience = process.env.API_GATEWAY_AUDIENCE
 
-async function generateGcpToken (expiryDate, targetServiceAccount) {
+async function generateGcpToken(expiryDate, targetServiceAccount) {
   const currentDate = new Moment()
   const lifetimeSeconds = expiryDate.diff(currentDate, 'seconds')
   const token = await client.generateAccessToken({
@@ -53,11 +51,11 @@ async function generateGcpToken (expiryDate, targetServiceAccount) {
       seconds: lifetimeSeconds
     }
   })
-  console.log('token granted until', Moment(currentDate).add(lifetimeSeconds, 'seconds').toISOString())
+  console.log('token granted until', new Moment(currentDate).add(lifetimeSeconds, 'seconds').toISOString())
   return token
 }
 
-async function generateApiGatewayToken (endpoint, expiryDate, targetServiceAccount) {
+async function generateApiGatewayToken(endpoint, expiryDate, targetServiceAccount) {
   // Sign a jwt token with the service account this is running as,
   // for the service account we want as the target
   const expiryTimestamp = Math.floor(expiryDate.format('X'))
@@ -75,10 +73,10 @@ async function generateApiGatewayToken (endpoint, expiryDate, targetServiceAccou
     payload: JSON.stringify(payloadContent)
   })
 
-  return { endpoint: endpoint, token: tokenResponse[0].signedJwt, expireTime: expiryTimestamp }
+  return {endpoint: endpoint, token: tokenResponse[0].signedJwt, expireTime: expiryTimestamp}
 }
 
-async function getExpiriyFromRoom (roomId, userId) {
+async function getExpiryFromRoom(roomId, userId) {
   console.log(`Checking room ${roomId} as this is an anonymous user`)
   const roomReference = await firestore.collection('chats').doc(roomId)
   const room = await roomReference.get()
@@ -89,12 +87,12 @@ async function getExpiriyFromRoom (roomId, userId) {
   // We only want to do anything if the room exists (created by an admin)
   if (room.exists) {
     const roomData = room.data()
-    expiryDate = roomData && roomData.expiryDate && Moment(roomData.expiryDate)
+    expiryDate = roomData && roomData.expiryDate && new Moment(roomData.expiryDate)
     guests = roomData && roomData.guests
 
     // Log and return on the various error scenarios:
     // Fail if this is the wrong guest for this room
-    const hasGuest  = guests.find(g => g.id === userId && g.status)
+    const hasGuest = guests.find(g => g.id === userId && g.status)
     if (!hasGuest) {
       authorized = false
       console.log('Not authorized: user is not the guest in this room')
@@ -114,15 +112,16 @@ async function getExpiriyFromRoom (roomId, userId) {
     console.log("Not authorized: room doesn't exist")
   }
   // make sure expiryDate doesn't go beyond 1 hour from now
-  const anHourFromNow = Moment().add(1, 'hour')
+  const anHourFromNow = new Moment().add(1, 'hour')
 
-  if (expiryDate > anHourFromNow) expiryDate = anHourFromNow
+  if (expiryDate > anHourFromNow) {
+    expiryDate = anHourFromNow
+  }
   return authorized && expiryDate
 }
 
 app.post('/', async (req, res) => {
   // First, verify the Firebase token.
-  //
   // Authorization token will come as x-forwarded-authorization if invoking
   // behind API Gateway, so take that case into account.
   const tokenPayload = req.headers['x-forwarded-authorization'] || req.headers.authorization
@@ -155,12 +154,12 @@ app.post('/', async (req, res) => {
       res.send(400, 'Room ID is missing')
       return
     }
-    if(req.body.firstname){
+    if (req.body.firstname) {
       await addGuest(req.body.roomId, userId, req.body.firstname)
       res.send(200, "GuestId added")
       return
-    }else{
-      expiryDate = await getExpiriyFromRoom(req.body.roomId, userId)
+    } else {
+      expiryDate = await getExpiryFromRoom(req.body.roomId, userId)
     }
   } else {
     // admin expiry defaults to 1 hour from current time
@@ -188,7 +187,7 @@ app.post('/', async (req, res) => {
   res.send(response)
 })
 
-async function addGuest(roomId, userId, firstname){
+async function addGuest(roomId, userId, firstname) {
   const roomReference = await firestore.collection('chats').doc(roomId);
   const FieldValue = firebaseAdmin.firestore.FieldValue;
   await roomReference.update({

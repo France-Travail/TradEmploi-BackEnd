@@ -51,3 +51,15 @@ resource "google_service_account" "cleanup_job_sa" {
   display_name = "Cleanup Job Service Account (used by Cloud Scheduler)"
   project      = var.project_id
 }
+
+resource "google_service_account" "translation_sa" {
+  account_id   = "pe-translation"
+  display_name = "Translation Service Account"
+  project      = var.project_id
+}
+
+resource "google_service_account" "authentication_sa" {
+  account_id   = "pe-authentication"
+  display_name = "Authentication Service Account"
+  project      = var.project_id
+}
