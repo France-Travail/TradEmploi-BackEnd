@@ -16,8 +16,8 @@ const apiEndpoint = "translate-eu.googleapis.com"
 
 app.post("/", async (req, res) => {
   const sourceLanguageSplitted = req.body.sourceLanguageCode.split("-")[0]
-  const targetLanguageSplitted = req.body.targetLanguageCode.split("-")[0]
-  const translatedText = deeplLanguages.includes(sourceLanguageSplitted)
+  const targetLanguageSplitted = req.body.targetLanguageCode.split("-")[0].toUpperCase();
+  const translatedText = deeplLanguages.includes(targetLanguageSplitted)
     ? await translateWithDeepl(
         req.body.text,
         targetLanguageSplitted,
@@ -69,3 +69,4 @@ process.on("unhandledRejection", (err) => {
   console.error(err.message)
   process.exitCode = 1
 })
+
