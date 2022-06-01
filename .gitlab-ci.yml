@@ -11,16 +11,16 @@ deploy-job:
   script:
     - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/translation
     - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/authentication
-    - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
+    # - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
+    # - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
+    # - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
+    # - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/authentication
+    # - gcloud builds submit .
   only:
     refs:
       - develop
