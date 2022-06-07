@@ -17,7 +17,7 @@ const apiEndpoint = "translate-eu.googleapis.com"
 app.post("/", async (req, res) => {
   const sourceLanguageSplitted = req.body.sourceLanguageCode.split("-")[0]
   const targetLanguageSplitted = req.body.targetLanguageCode.split("-")[0].toUpperCase();
-  const translatedText = deeplLanguages.includes(targetLanguageSplitted)
+  const translatedText = deeplLanguages.includes(targetLanguageSplitted) && deeplLanguages.includes(sourceLanguageSplitted)
     ? await translateWithDeepl(
         req.body.text,
         targetLanguageSplitted,
