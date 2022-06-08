@@ -110,7 +110,7 @@ paths:
             type: string
   /translation:
     post:
-      summary: Translation v3 api endpoing
+      summary: Translation v3 api endpoint
       operationId: translation-v3--post
       x-google-backend:
         address: ${translation_url}
