@@ -15,20 +15,27 @@ const location = "europe-west1"
 const apiEndpoint = "translate-eu.googleapis.com"
 
 app.post("/", async (req, res) => {
-  const sourceLanguageSplitted = req.body.sourceLanguageCode.split("-")[0]
-  const targetLanguageSplitted = req.body.targetLanguageCode.split("-")[0].toUpperCase();
-  const translatedText = deeplLanguages.includes(targetLanguageSplitted) && deeplLanguages.includes(sourceLanguageSplitted)
-    ? await translateWithDeepl(
-        req.body.text,
-        targetLanguageSplitted,
-        sourceLanguageSplitted
-      )
-    : await translateText(
-        req.body.projectId,
-        req.body.text,
-        req.body.targetLanguageCode,
-        req.body.sourceLanguageCode
-      )
+  const sourceLanguageSplitted = req.body.sourceLanguageCode
+    .split("-")[0]
+    .toUpperCase()
+  const targetLanguageSplitted = req.body.targetLanguageCode
+    .split("-")[0]
+    .toUpperCase()
+
+  const translatedText =
+    deeplLanguages.includes(targetLanguageSplitted) &&
+    deeplLanguages.includes(sourceLanguageSplitted)
+      ? await translateWithDeepl(
+          req.body.text,
+          targetLanguageSplitted,
+          sourceLanguageSplitted
+        )
+      : await translateText(
+          req.body.projectId,
+          req.body.text,
+          req.body.targetLanguageCode,
+          req.body.sourceLanguageCode
+        )
 
   const response = {
     status: 200,
@@ -69,4 +76,3 @@ process.on("unhandledRejection", (err) => {
   console.error(err.message)
   process.exitCode = 1
 })
-
