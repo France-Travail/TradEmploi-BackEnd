@@ -1,10 +1,26 @@
 `
- Copyright 2020 Google LLC. This software is provided as-is, without warranty
- or representation for any use or purpose. Your use of it is subject to your
- agreement with Google.
+**TradEmploi: an instantaneous translation application between two people, one of whom is allophone**
+
+Copyright (C) <2022>  <Innovation Department, DSI Pôle Emploi>
+
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details.
+You should have received a copy of the GNU Affero General Public License along with this program.  If not, see https://www.gnu.org/licenses/.
+
 `
 
-# Pôle Emploi / PSO repository
+# PETranslate-back
+
+# Licence
+This project is distributed under the GNU AFFERO GENERAL PUBLIC LICENSE V3.0. Please check the LICENSE file.
+
+# Philosophy and objective
+
+This project is the backend of the application. The frontend is **petranslate** project. Checks readme to install it.
+The purpose of this application is describe in the documention of the frontend part.
+
+# Installation
+
 ## translation-app-assessment
 This contains example code for the Jan-Feb 2021 engagement on a code review / assessment of Pôle Emploi's voice+translation application.
 
