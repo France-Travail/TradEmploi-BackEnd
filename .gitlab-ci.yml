@@ -1,26 +1,28 @@
 image: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
 before_script:
-  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE
-  - gcloud config set project $GCP_PROJECT
+  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE_PROD
+  - gcloud config set project $GCP_PROJECT_PROD
+
 stages:
   - deploy
 deploy-job:
   stage: deploy
   environment:
-    name: staging
+    name: production
+    url: https://pole-emploi-trad.firebaseapp.com
   script:
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/translation
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
-    - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/authentication
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/translation
+    # - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
+    # - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
+    # - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
+    # - gcloud builds submit .
+    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
+    # - gcloud builds submit .
+    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/pe-auth
     - gcloud builds submit .
   only:
     refs:
-      - develop
+      - master
