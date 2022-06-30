@@ -5,7 +5,7 @@ const translateWithDeepl = (text, targetLang, sourceLang) => {
   console.log("translateWithDeepl", text)
   return axios
     .get(
-      `https://api-free.deepl.com/v2/translate?auth_key=${
+      `https://api.deepl.com/v2/translate?auth_key=${
         process.env.DEEPL_API_KEY
       }&text=${encodeURI(
         text
