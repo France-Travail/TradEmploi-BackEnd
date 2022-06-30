@@ -42,7 +42,7 @@ Here are the first few steps that you need to take:
 
     Replace `$BUCKET_NAME` above with the name you would like to give your bucket. This name needs to be universally unique and DNS-friendly (lower case letters, numbers, hyphens). For example: `pe-trad-tf-state`.
     
-    Replace the Pôle Emploi tags, regex, labels and namespace with the name you would like to give, in those files: [index.ts](../backend/authentication/src/index.ts), cloudbuild.yaml, rules.txt, 
+    Replace the Pôle Emploi tags, regex, labels and namespace with the name you would like to give, in those files: [index.ts](../backend/authentication/src/index.ts), [cloudbuild.yaml](../backend/authentication/cloudbuild.yaml), [rules.txt](../firestore_rules/rules.txt). 
 
 4. Edit the config.tf and terraform.tfvars files in each dir (01-project-setup, 02-services, and 03-monitoring) to reflect the following changes:
     - In the config.tf file, change the value of `bucket` to be the name of the bucket you just created in the previous step.
@@ -53,9 +53,9 @@ Here are the first few steps that you need to take:
     ```
     gcloud iam service-accounts create terraform --project $SA_PROJECT_ID
 
-    gcloud projects add-iam-policy-binding $GCP_PROJECT --member serviceAccount:terraform@$SA_PROJECT_ID.iam.gserviceaccount.com --role roles/owner
+    gcloud projects add-iam-policy-binding $SA_PROJECT_ID --member serviceAccount:terraform@$SA_PROJECT_ID.iam.gserviceaccount.com --role roles/owner
 
-    gcloud iam service-accounts keys create ~/credentials.json --iam-account terraform@$SA_PROJECT_ID.iam.gserviceaccount.com
+    gcloud iam service-accounts keys create ~/.config/gcloud/application_default_credentials.json --iam-account terraform@$SA_PROJECT_ID.iam.gserviceaccount.com
 
     ```
 
@@ -68,7 +68,11 @@ Here are the first few steps that you need to take:
 6. Set an environment variable that contains the key file you created, for Terraform to find.
 
     ```
-    export GOOGLE_APPLICATION_CREDENTIALS=~/credentials.json
+    # on linux
+    export GOOGLE_APPLICATION_CREDENTIALS=~/.config/gcloud/application_default_credentials.json
+   
+    # on Windows
+    %appdata%/gcloud/application_default_credentials.json
     ```
 
     Change the path as needed if you created the file elsewhere or with another name.
@@ -88,6 +92,11 @@ This part is the actual application of the templates that creates all necessary 
 
 ### Apply 01-project-setup
 
+On windows, got to `01-project-setup`, uncomment in `container-images.tf` the following lines:
+```
+interpreter = ["PowerShell", "-Command"]
+```
+
 Simply cd to the `01-project-setup` directory and run:
 
 ```
@@ -98,6 +107,12 @@ You'll be asked to confirm by typing `yes` and this should create the first few 
 
 Only move to the next step if Terraform finished without any errors.
 
+It will take a few minutes to create all resources.
+Only move to the next step if Terraform finished without any errors.
+Perhaps, you must manually activate (following log errors) API:
+- Cloud Resource Manager API
+- Firebase Management API
+
 ### Apply 02-services
 
 Again, cd to the `02-services` directory and run:
@@ -105,9 +120,6 @@ Again, cd to the `02-services` directory and run:
 ```
 terraform apply
 ```
-
-It will take a few minutes to create all resources.
-Only move to the next step if Terraform finished without any errors.
 
 ### Apply 03-monitoring
 

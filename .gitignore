@@ -1,2 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
 .gitlab-ci.yml
+translation-app-assessment/backend/.DS_Store
+.gitignore
+.DS_Store
