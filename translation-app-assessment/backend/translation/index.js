@@ -21,10 +21,12 @@ app.post("/", async (req, res) => {
   const targetLanguageSplitted = req.body.targetLanguageCode
     .split("-")[0]
     .toUpperCase()
+  const useDeepl = process.env.DEEPL_API_KEY 
 
   const translatedText =
     deeplLanguages.includes(targetLanguageSplitted) &&
-    deeplLanguages.includes(sourceLanguageSplitted)
+    deeplLanguages.includes(sourceLanguageSplitted) &&
+    useDeepl
       ? await translateWithDeepl(
           req.body.text,
           targetLanguageSplitted,

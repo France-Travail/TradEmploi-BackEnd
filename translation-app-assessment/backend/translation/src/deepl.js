@@ -1,7 +1,7 @@
 const axios = require("axios")
+
 require("dotenv").config()
 const translateWithDeepl = (text, targetLang, sourceLang) => {
-  console.log("translateWithDeepl", text)
   return axios
     .get(
       `https://api.deepl.com/v2/translate?auth_key=${
@@ -12,6 +12,9 @@ const translateWithDeepl = (text, targetLang, sourceLang) => {
     )
     .then((response) => {
       return response.data.translations[0].text
+    })
+    .catch((error) => {
+      console.error(error)
     })
 }
 
