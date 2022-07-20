@@ -9,17 +9,17 @@ deploy-job:
   environment:
     name: staging
   script:
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/translation
+    - cd /builds/translate/TradEmploi-backend/translation-app-assessment/backend/translation
     - gcloud builds submit .
-    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
+    # - cd /builds/translate/TradEmploi-backend/translation-app-assessment/backend/reporting
     # - gcloud builds submit .
-    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
+    # - cd /builds/translate/TradEmploi-backend/translation-app-assessment/backend/token-broker
     # - gcloud builds submit .
-    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
+    # - cd /builds/translate/TradEmploi-backend/translation-app-assessment/backend/cleanup
     # - gcloud builds submit .
-    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
+    # - cd /builds/translate/TradEmploi-backend/translation-app-assessment/backend/telemetry
     # - gcloud builds submit .
-    # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/authentication
+    # - cd /builds/translate/TradEmploi-backend/translation-app-assessment/backend/authentication
     # - gcloud builds submit .
   only:
     refs:
