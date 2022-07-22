@@ -1,7 +1,7 @@
 image: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
 before_script:
-  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE_PROD
-  - gcloud config set project $GCP_PROJECT_PROD
+  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE_RECETTE
+  - gcloud config set project $GCP_PROJECT_RECETTE
 
 stages:
   - deploy
@@ -11,17 +11,17 @@ deploy-job:
     name: production
     url: https://pole-emploi-trad.firebaseapp.com
   script:
-   # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/translation
+   # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/translation
    # - gcloud builds submit .
-   # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/reporting
+   # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/reporting
    # - gcloud builds submit .
-   # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/token-broker
+   # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/token-broker
    # - gcloud builds submit .
-   # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/cleanup
+   # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/cleanup
    #- gcloud builds submit .
-   # - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/telemetry
+   # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/telemetry
    # - gcloud builds submit .
-    - cd /builds/petranslate/petranslate-back-gcp/translation-app-assessment/backend/authentication
+    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/authentication
     - gcloud builds submit .
   only:
     refs:

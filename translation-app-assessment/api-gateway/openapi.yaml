@@ -34,6 +34,25 @@ paths:
           description: A successful response
           schema:
             type: string
+  /tokeninfo:
+    get:
+      summary: Authentication api tokeninfo endpoint
+      operationId: tokeninfo--get
+      x-google-backend:
+        address: ${authentication_url}/tokeninfo
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+    options:
+      summary: CORS
+      operationId: tokeninfo--options
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
   /reporting:
     post:
       summary: Reporting endpoing (GraphQL)

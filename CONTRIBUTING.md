@@ -17,7 +17,7 @@ Contacts:
 
 ## Contributions
 
-We welcome community contributions aimed at improving the templates. To do so please send us a patch to the following email: [oss.00619@pole-emploi.fr](mailto:oss.00619@pole-emploi.fr).
+We welcome community contributions aimed at improving the templates. To do so please send us a patch to the following email: oss.00619@pole-emploi.fr.
 
 Before submitting a patch:
 - Please make sure the all tests are OK
