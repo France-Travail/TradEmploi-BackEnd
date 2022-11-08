@@ -7,9 +7,9 @@ stages:
   - deploy
 deploy-job:
   stage: deploy
-    environment:    
-      name: production
-      url: https://pole-emploi-trad.firebaseapp.com
+  environment:    
+    name: production
+    url: https://pole-emploi-trad.firebaseapp.com
   script:
     - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/translation
     - gcloud builds submit .
