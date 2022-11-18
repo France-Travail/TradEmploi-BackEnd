@@ -71,6 +71,6 @@ const buildRate = (r: any) => {
     user: r.user ? r.user : "",
     agency: r.agency ? r.agency : "",
     typeSTT: r.typeSTT ? r.typeSTT: "",
-    isTradDoc: r.isTradDoc ? r.isTradDoc: ""
+    isTradTonDoc: r.isTradTonDoc ? r.isTradTonDoc: ""
   }
 }

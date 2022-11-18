@@ -21,7 +21,7 @@ const schema = gql`
     user: String
     agency: String
     typeSTT: String
-    isTradDoc: Boolean
+    isTradTonDoc: Boolean
   }
   type Kpi {
     day: String
