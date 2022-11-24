@@ -4,7 +4,6 @@ const cors = require("cors")
 const { textDetectionFromImage, textDetectionFromPdf } = require("./src/ocr.js")
 const {
   uploadFileToBucket,
-  textDetectionFromImage,
   deleteFile,
 } = require("./src/bucketOperations.js")
 
