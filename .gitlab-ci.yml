@@ -9,7 +9,7 @@ deploy-job:
   environment:
     name: staging
   script:
-    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/translation
+    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/detect-text
     - gcloud builds submit .
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/reporting
     # - gcloud builds submit .
@@ -25,4 +25,6 @@ deploy-job:
     # - gcloud builds submit .
   only:
     refs:
+      - create-service-ocr
+      - sample-ocr
       - develop
