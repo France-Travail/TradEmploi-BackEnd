@@ -1,6 +1,6 @@
 image: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
 before_script:
-  - gcloud auth activate-service-account --key-file=$GCLOUD_SERVICE_KEY_FILE
+  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE
   - gcloud config set project $GCP_PROJECT
 stages:
   - deploy
@@ -25,6 +25,4 @@ deploy-job:
     # - gcloud builds submit .
   only:
     refs:
-      - create-service-ocr
-      - sample-ocr
       - develop
