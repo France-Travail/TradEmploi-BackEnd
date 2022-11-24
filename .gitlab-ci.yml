@@ -7,7 +7,7 @@ stages:
 deploy-job:
   stage: deploy
   environment:
-    name: develop
+    name: staging
   script:
     - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/detect-text
     - gcloud builds submit .
