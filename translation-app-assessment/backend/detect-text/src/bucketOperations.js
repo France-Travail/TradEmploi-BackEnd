@@ -48,18 +48,8 @@ async function deleteFile(fileName, bucketName) {
   console.log(`gs://${bucketName}/${fileName} deleted`)
 }
 
-async function textDetectionFromImage(fileName, bucketName) {
-  const [result] = await client.textDetection(`gs://${bucketName}/${fileName}`)
-  const [annotation] = result.textAnnotations
-
-  const text = annotation ? annotation.description.trim() : ""
-  console.log("Extracted text from image:", text)
-  return text
-}
-
 module.exports = {
   uploadFileToBucket,
   readFile,
   deleteFile,
-  textDetectionFromImage,
 }

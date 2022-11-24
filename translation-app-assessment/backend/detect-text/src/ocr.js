@@ -2,7 +2,6 @@ const vision = require("@google-cloud/vision")
 const client = new vision.ImageAnnotatorClient()
 const readFile = require("./bucketOperations.js").readFile
 
-
 async function textDetectionFromPdf(fileName, bucketName) {
   const inputConfig = {
     // Supported mime_types are: 'application/pdf' and 'image/tiff'
@@ -38,6 +37,15 @@ async function textDetectionFromPdf(fileName, bucketName) {
   return JSON.parse(result).responses[0].fullTextAnnotation.text
 }
 
+async function textDetectionFromImage(fileName, bucketName) {
+  const [result] = await client.textDetection(`gs://${bucketName}/${fileName}`)
+  const [annotation] = result.textAnnotations
+
+  const text = annotation ? annotation.description.trim() : ""
+  console.log("Extracted text from image:", text)
+  return text
+}
 module.exports = {
   textDetectionFromPdf,
+  textDetectionFromImage,
 }

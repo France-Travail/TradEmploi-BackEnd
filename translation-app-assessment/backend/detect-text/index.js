@@ -1,6 +1,12 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const cors = require("cors")
+const { textDetectionFromImage, textDetectionFromPdf } = require("./src/ocr.js")
+const {
+  uploadFileToBucket,
+  textDetectionFromImage,
+  deleteFile,
+} = require("./src/bucketOperations.js")
 
 const app = express()
 app.disable("x-powered-by")
@@ -13,15 +19,9 @@ app.get("/", (req, res) => {
   res.send("Hello World!")
 })
 
-const {
-  uploadFileToBucket,
-  textDetectionFromImage,
-  deleteFile,
-} = require("./src/bucketOperations.js")
-
 app.post("/upload", async (req, res) => {
   const { bucketName, data, fileName } = req.body
-  
+
   await uploadFileToBucket(fileName, bucketName, data)
   let text =
     fileName && fileName.endsWith(".pdf")
@@ -30,7 +30,7 @@ app.post("/upload", async (req, res) => {
 
   await deleteFile(fileName, bucketName)
 
-  return res.status(200).send(text)
+  return res.status(200).send({ text: text })
 })
 
 app.listen(port, () => {
