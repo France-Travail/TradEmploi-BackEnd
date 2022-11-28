@@ -23,8 +23,8 @@ async function uploadFileToBucket(fileName, bucketName, data) {
     console.log(`${fileName} uploaded.`)
 }
 
-async function readFile(bucketName, fileName) {
-    const savedFile = storage.bucket(bucketName).file(fileName);
+async function readFile(bucketName) {
+    const savedFile = storage.bucket(bucketName).file('dest/output-1-to-1.json');
     return new Promise(function (resolve, reject) {
         const stream = savedFile.createReadStream();
         let buf = ""
