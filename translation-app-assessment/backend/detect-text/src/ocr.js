@@ -3,7 +3,7 @@ const client = new vision.ImageAnnotatorClient()
 const readFile = require("./bucketOperations.js").readFile
 
 async function textDetectionFromPdf(fileName, bucketName) {
-  const result = await readFile(bucketName)
+  const result = await readFile(bucketName, fileName)
   return JSON.parse(result).responses[0].fullTextAnnotation.text
 }
 
