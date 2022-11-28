@@ -2,23 +2,20 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const cors = require("cors")
 const { textDetectionFromImage, textDetectionFromPdf } = require("./src/ocr.js")
-const {
-  uploadFileToBucket,
-  deleteFile,
-} = require("./src/bucketOperations.js")
+const { uploadFileToBucket, deleteFile } = require("./src/bucketOperations.js")
 
 const app = express()
 app.disable("x-powered-by")
 app.use(bodyParser.json({ limit: "50mb" }))
-app.use(cors())
+const corsOptions = {
+  methods: ["GET", "POST", "PUT"],
+  maxAge: 3600,
+}
+app.use(cors(corsOptions))
 
 const port = process.env.PORT || 8080
 
-app.get("/", (req, res) => {
-  res.send("Hello World!")
-})
-
-app.post("/upload", async (req, res) => {
+app.post("/", async (req, res) => {
   const { bucketName, data, fileName } = req.body
 
   await uploadFileToBucket(fileName, bucketName, data)

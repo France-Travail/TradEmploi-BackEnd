@@ -44,8 +44,6 @@ async function readFile(bucketName, fileName) {
 
 async function deleteFile(fileName, bucketName) {
   await storage.bucket(bucketName).file(fileName).delete()
-
-  console.log(`gs://${bucketName}/${fileName} deleted`)
 }
 
 module.exports = {
