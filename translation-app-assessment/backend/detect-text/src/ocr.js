@@ -1,7 +1,7 @@
 const vision = require("@google-cloud/vision")
 const { deleteFile } = require("./bucketOperations.js")
 const client = new vision.ImageAnnotatorClient()
-const readFile = require("./bucketOperations.js").readFile
+const {readFile, deleteFile} = require("./bucketOperations.js")
 
 async function textDetectionFromPdf(fileName, bucketName) {
   const source = `gs://${bucketName}/${fileName}`
@@ -33,12 +33,13 @@ async function textDetectionFromPdf(fileName, bucketName) {
 }
 
 async function textDetectionFromImage(fileName, bucketName) {
-  const [result] = await client.textDetection(`gs://${bucketName}/${fileName}`)
-  const [annotation] = result.textAnnotations
-  const text = annotation ? annotation.description.trim() : ""
-  return text
+    const [result] = await client.textDetection(`gs://${bucketName}/${fileName}`)
+    const [annotation] = result.textAnnotations
+    const text = annotation ? annotation.description.trim() : ""
+    return text
 }
+
 module.exports = {
-  textDetectionFromPdf,
-  textDetectionFromImage,
+    textDetectionFromPdf,
+    textDetectionFromImage,
 }
