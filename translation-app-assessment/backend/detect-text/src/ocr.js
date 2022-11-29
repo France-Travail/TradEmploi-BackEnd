@@ -1,10 +1,35 @@
 const vision = require("@google-cloud/vision")
+const { deleteFile } = require("./bucketOperations.js")
 const client = new vision.ImageAnnotatorClient()
 const readFile = require("./bucketOperations.js").readFile
 
 async function textDetectionFromPdf(fileName, bucketName) {
-  const result = await readFile(bucketName, fileName)
-  return JSON.parse(result).responses[0].fullTextAnnotation.text
+  const source = `gs://${bucketName}/${fileName}`
+  const outputFile = "output-1-to-1.json"
+
+  const request = {
+    requests: [
+      {
+        inputConfig: {
+          mimeType: "application/pdf",
+          gcsSource: {
+            uri: source,
+          },
+        },
+        outputConfig: {
+          gcsDestination: {
+            uri: `gs://${bucketName}/`,
+          },
+        },
+        features: [{ type: "DOCUMENT_TEXT_DETECTION" }],
+      },
+    ],
+  }
+  const [operation] = await client.asyncBatchAnnotateFiles(request)
+  await operation.promise()
+  const res = await readFile(bucketName, outputFile)
+  deleteFile(outputFile, bucketName)
+  return res.responses[0].fullTextAnnotation.text
 }
 
 async function textDetectionFromImage(fileName, bucketName) {
