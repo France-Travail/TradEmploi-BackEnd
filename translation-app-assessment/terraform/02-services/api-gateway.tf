@@ -51,6 +51,7 @@ data "template_file" "openapi" {
     reporting_url    = google_cloud_run_service.reporting.status[0].url
     translation_url    = google_cloud_run_service.translation.status[0].url
     authentication_url = google_cloud_run_service.authentication.status[0].url
+    detect_text_url = google_cloud_run_service.detect_text.status[0].url
     admin_sa_email   = google_service_account.client_admin_sa.email
     guest_sa_email   = google_service_account.client_guest_sa.email
     oidc_audience    = var.oidc_audience

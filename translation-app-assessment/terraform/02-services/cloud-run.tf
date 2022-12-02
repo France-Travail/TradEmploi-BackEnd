@@ -124,3 +124,21 @@ resource "google_cloud_run_service" "authentication" {
     }
   }
 }
+resource "google_cloud_run_service" "detect_text" {
+  name     = "pe-detect-text"
+  location = var.region
+  project  = var.project_id
+
+  template {
+    spec {
+      service_account_name = google_service_account.detect_text_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/pe-detect-text:v1"
+        env {
+          name  = "GCP_PROJECT"
+          value = var.project_id
+        }
+      }
+    }
+  }
+}
