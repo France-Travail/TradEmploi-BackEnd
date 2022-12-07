@@ -63,3 +63,9 @@ resource "google_service_account" "authentication_sa" {
   display_name = "Authentication Service Account"
   project      = var.project_id
 }
+
+resource "google_service_account" "detect_text_sa" {
+  account_id   = "pe-detect-text"
+  display_name = "Detect Text Service Account"
+  project      = var.project_id
+}
