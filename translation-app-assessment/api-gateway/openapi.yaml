@@ -151,6 +151,30 @@ paths:
           description: A successful response
           schema:
             type: string
+  /detect-text:
+    post:
+      summary: Detect text api endpoint
+      operationId: detect-text--post
+      x-google-backend:
+        address: ${detect-text_url}
+      responses:
+        '200':
+          description: A display of detected text
+          schema:
+            type: string
+      security:
+        - admin-sa: [ ]
+        - guest-sa: [ ]
+    options:
+      summary: CORS
+      operationId: detect-text--options
+      x-google-backend:
+        address: ${token_broker_url}
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
   /callback:
     get:
       summary: Authentication api callback endpoint
