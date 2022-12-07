@@ -24,8 +24,9 @@ app.post("/", async (req, res) => {
       ? await textDetectionFromPdf(fileName, bucketName)
       : await textDetectionFromImage(fileName, bucketName)
 
-  await deleteFile(fileName, bucketName)
+  text = text.replace(/\n/g, " ")
 
+  await deleteFile(fileName, bucketName)
   return res.status(200).send({ text: text })
 })
 
