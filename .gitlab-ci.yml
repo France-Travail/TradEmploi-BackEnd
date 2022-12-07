@@ -11,8 +11,8 @@ deploy-job:
   script:
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/translation
     # - gcloud builds submit .
-    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/reporting
-    - gcloud builds submit .
+    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/reporting
+    # - gcloud builds submit .
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/token-broker
     # - gcloud builds submit .
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/cleanup
@@ -21,8 +21,8 @@ deploy-job:
     # - gcloud builds submit .
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/authentication
     # - gcloud builds submit .
-    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/detect-text
-    # - gcloud builds submit .
+    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/detect-text
+    - gcloud builds submit .
   only:
     refs:
       - develop
