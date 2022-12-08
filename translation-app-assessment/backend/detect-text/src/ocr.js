@@ -27,7 +27,7 @@ async function textDetectionFromPdf(fileName, bucketName) {
   const [operation] = await client.asyncBatchAnnotateFiles(request)
   await operation.promise()
   const res = await readFile(bucketName, outputFile)
-  deleteFile(outputFile, bucketName)
+  await deleteFile(outputFile, bucketName)
   return res.responses[0].fullTextAnnotation.text
 }
 
@@ -35,6 +35,7 @@ async function textDetectionFromImage(fileName, bucketName) {
   const [result] = await client.textDetection(`gs://${bucketName}/${fileName}`)
   const [annotation] = result.textAnnotations
   const text = annotation ? annotation.description.trim() : ""
+  await deleteFile(fileName, bucketName)
   return text
 }
 

@@ -25,16 +25,15 @@ app.post("/", async (req, res) => {
       ? await textDetectionFromPdf(fileName, bucketName)
       : await textDetectionFromImage(fileName, bucketName)
 
-  let detectedText = await removeCarriageReturn(text)
+  let detectedText = removeCarriageReturn(text)
 
-  let numberCharacters = await countNumberCharactersInText(detectedText)
+  let numberCharacters = countNumberCharactersInText(detectedText)
 
   let limitNumberCharacters =
       numberCharacters > 10000
-          ? res.status(400).send({ response: "The maximum number of characters is 10 000!" })
+          ? res.status(400).send({ error: "The maximum number of characters is 10 000!" })
           : numberCharacters
 
-  await deleteFile(fileName, bucketName)
   return res.status(200).send({ numberCharactersInText: limitNumberCharacters, text: detectedText })
 })
 
