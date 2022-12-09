@@ -35,7 +35,6 @@ async function textDetectionFromImage(fileName, bucketName) {
   const [result] = await client.textDetection(`gs://${bucketName}/${fileName}`)
   const [annotation] = result.textAnnotations
   const text = annotation ? annotation.description.trim() : ""
-  await deleteFile(fileName, bucketName)
   return text
 }
 
