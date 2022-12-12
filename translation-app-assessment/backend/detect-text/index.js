@@ -3,7 +3,10 @@ const bodyParser = require("body-parser")
 const cors = require("cors")
 const { textDetectionFromImage, textDetectionFromPdf } = require("./src/ocr.js")
 const { uploadFileToBucket, deleteFile } = require("./src/bucketOperations.js")
-const { removeCarriageReturn, countNumberCharactersInText } = require("./src/textControls")
+const {
+  removeCarriageReturn,
+  countNumberCharactersInText,
+} = require("./src/textControls")
 
 const app = express()
 app.disable("x-powered-by")
@@ -29,12 +32,15 @@ app.post("/", async (req, res) => {
 
   let numberCharacters = countNumberCharactersInText(detectedText)
 
-  let limitNumberCharacters =
-      numberCharacters > 10000
-          ? res.status(400).send({ error: "The maximum number of characters is 10 000!" })
-          : numberCharacters
-
-  return res.status(200).send({ numberCharactersInText: limitNumberCharacters, text: detectedText })
+  const resp =
+    numberCharacters > 10000
+      ? {
+          numberCharactersInText: numberCharacters,
+          error: "The maximum number of characters is 10 000!",
+        }
+      : { numberCharactersInText: numberCharacters, text: detectedText }
+  deleteFile(fileName, bucketName)
+  return res.send(resp)
 })
 
 app.listen(port, () => {
