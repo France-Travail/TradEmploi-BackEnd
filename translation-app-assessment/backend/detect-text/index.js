@@ -39,7 +39,7 @@ app.post("/", async (req, res) => {
           error: "The maximum number of characters is 10 000!",
         }
       : { numberCharactersInText: numberCharacters, text: detectedText }
-  deleteFile(fileName, bucketName)
+  await deleteFile(fileName, bucketName)
   return res.send(resp)
 })
 
