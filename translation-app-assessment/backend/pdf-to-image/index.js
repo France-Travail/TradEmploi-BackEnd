@@ -8,10 +8,12 @@ const { deleteFile } = require("./src/deleteFile")
 const app = express()
 app.disable("x-powered-by")
 app.use(bodyParser.json({ limit: "10mb" }))
+
 const corsOptions = {
   methods: ["POST"],
   maxAge: 3600,
 }
+
 app.use(cors(corsOptions))
 
 app.post("/", async (req, res) => {
@@ -20,14 +22,13 @@ app.post("/", async (req, res) => {
   let fileBuffer = await encodePdf(data)
 
   const outputFileName = `${fileName.split(".")[0]}`
-  await pdfToImage(fileBuffer, outputFileName)
+  let convertedFile = await pdfToImage(fileBuffer, outputFileName)
+  if (!fileBuffer || !convertedFile) {
+    return res.send({ error: "Le fichier n'a pas pu être converti !" })
+  }
 
-  const pathImg = __dirname + `/${outputFileName}.png`
-  res.sendFile(pathImg, "", function (err) {
-    if (err) {
-      console.log(err)
-    }
-    deleteFile(pathImg)
+  res.send({
+    data: convertedFile,
   })
 })
 

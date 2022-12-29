@@ -21,8 +21,8 @@ deploy-job:
     # - gcloud builds submit .
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/authentication
     # - gcloud builds submit .
-    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/detect-text
-    - gcloud builds submit .
+    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/detect-text
+    # - gcloud builds submit .
     - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/pdf-to-image
     - gcloud builds submit .
   only:
