@@ -1,7 +1,7 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const cors = require("cors")
-const { textDetectionFromImage, textDetectionFromPdf } = require("./src/ocr.js")
+const { textDetectionFromImage } = require("./src/ocr.js")
 const { uploadFileToBucket, deleteFile } = require("./src/bucketOperations.js")
 const {
   removeCarriageReturn,
@@ -17,16 +17,12 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 
-const port = process.env.PORT || 8080
-
 app.post("/", async (req, res) => {
   const { bucketName, data, fileName } = req.body
 
   await uploadFileToBucket(fileName, bucketName, data)
-  let text =
-    fileName && fileName.endsWith(".pdf")
-      ? await textDetectionFromPdf(fileName, bucketName)
-      : await textDetectionFromImage(fileName, bucketName)
+
+  let text = await textDetectionFromImage(fileName, bucketName)
 
   let detectedText = removeCarriageReturn(text)
 
@@ -42,6 +38,8 @@ app.post("/", async (req, res) => {
   await deleteFile(fileName, bucketName)
   return res.send(resp)
 })
+
+const port = process.env.PORT || 8080
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`)

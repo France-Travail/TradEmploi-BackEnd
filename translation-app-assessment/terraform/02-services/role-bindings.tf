@@ -65,6 +65,13 @@ resource "google_project_iam_member" "storage_api_user_role" {
   role    = "roles/storage.objects.*"
   member  = "serviceAccount:${google_service_account.detect_text_sa.email}"
 }
+
+# Allow convert file service to use the Cloud Storage API
+resource "google_project_iam_member" "storage_api_user_role" {
+  project = var.project_id
+  role = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.pdf_to_image_sa.email}"
+}
 # allow API Gateway Service Account to invoke all Cloud Run services
 # (ie, in order to reach Cloud Run services, you need to go through API Gateway first)
 resource "google_cloud_run_service_iam_member" "token_broker" {
@@ -112,6 +119,13 @@ resource "google_cloud_run_service_iam_member" "detect-text" {
   role = "roles/run.invoker"
   member = "serviceAccount:${google_service_account.api_gateway_sa.email}"
 }
+resource "google_cloud_run_service_iam_member" "pdf-to-image" {
+  location = google_cloud_run_service.pdf_to_image.location
+  project = google_cloud_run_service.pdf_to_image.project
+  service = google_cloud_run_service.pdf_to_image.name
+  role = "roles/run.invoker"
+  member = "serviceAccount:${google_service_account.api_gateway_sa.email}"
+}
 # allow Cleanup Job Service Account to invoke Cleanup Cloud Run service
 resource "google_cloud_run_service_iam_member" "cleanup" {
   location = google_cloud_run_service.cleanup.location
@@ -134,7 +148,8 @@ locals {
     google_cloud_run_service.cleanup.name,
     google_cloud_run_service.translation.name,
     google_cloud_run_service.authentication.name,
-    google_cloud_run_service.detect_text.name
+    google_cloud_run_service.detect_text.name,
+    google_cloud_run_service.pdf_to_image.name
   ]
   cloud_run_service_account_ids = [
     google_service_account.token_broker_sa.account_id,
@@ -143,7 +158,8 @@ locals {
     google_service_account.telemetry_sa.account_id,
     google_service_account.translation_sa.account_id,
     google_service_account.authentication_sa.account_id,
-    google_service_account.detect_text_sa.account_id
+    google_service_account.detect_text_sa.account_id,
+    google_service_account.pdf_to_image_sa.account_id
   ]
 }
 

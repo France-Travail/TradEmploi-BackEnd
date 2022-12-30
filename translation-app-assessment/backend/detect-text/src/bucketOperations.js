@@ -23,11 +23,6 @@ async function uploadFileToBucket(fileName, bucketName, data) {
   console.log(`${fileName} uploaded.`)
 }
 
-async function readFile(bucketName, fileName) {
-  const file = await new Storage().bucket(bucketName).file(fileName).download()
-  return JSON.parse(file[0].toString("utf8"))
-}
-
 async function deleteFile(fileName, bucketName) {
   await storage.bucket(bucketName).file(fileName).delete()
   console.log(`${fileName} deleted.`)
@@ -35,6 +30,5 @@ async function deleteFile(fileName, bucketName) {
 
 module.exports = {
   uploadFileToBucket,
-  readFile,
   deleteFile,
 }
