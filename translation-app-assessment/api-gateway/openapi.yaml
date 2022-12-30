@@ -175,6 +175,30 @@ paths:
           description: A successful response
           schema:
             type: string
+  /pdf-to-image:
+    post:
+      summary: Convert pdf to image api endpoint
+      operationId: pdf-to-image--post
+      x-google-backend:
+        address: ${pdf-to-image_url}
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+      security:
+        - admin-sa: [ ]
+        - guest-sa: [ ]
+    options:
+      summary: CORS
+      operationId: pdf-to-image--options
+      x-google-backend:
+        address: ${token_broker_url}
+      responses:
+        '204':
+          description: A successful response
+          schema:
+            type: string
   /callback:
     get:
       summary: Authentication api callback endpoint

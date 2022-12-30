@@ -142,3 +142,21 @@ resource "google_cloud_run_service" "detect_text" {
     }
   }
 }
+resource "google_cloud_run_service" "pdf_to_image" {
+  name     = "pe-pdf-to-image"
+  location = var.region
+  project  = var.project_id
+
+  template {
+    spec {
+      service_account_name = google_service_account.pdf_to_image_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/pe-pdf-to-image:v1"
+        env {
+          name  = "GCP_PROJECT"
+          value = var.project_id
+        }
+      }
+    }
+  }
+}
