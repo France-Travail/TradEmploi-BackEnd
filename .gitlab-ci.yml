@@ -24,7 +24,7 @@ deploy-job:
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/detect-text
     # - gcloud builds submit .
     - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/pdf-to-image
-    - gcloud builds submit .
+    - gcloud builds submit . --config=cloudbuild_pdf.yaml
   only:
     refs:
       - develop
