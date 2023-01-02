@@ -9,8 +9,8 @@ deploy-job:
   environment:
     name: staging
   script:
-    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/translation
-    - gcloud builds submit .
+    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/translation
+    # - gcloud builds submit .
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/reporting
     # - gcloud builds submit .
     # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/token-broker
