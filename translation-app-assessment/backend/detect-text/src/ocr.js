@@ -1,5 +1,6 @@
 const vision = require("@google-cloud/vision")
-const client = new vision.ImageAnnotatorClient()
+const clientOptions = {apiEndpoint: 'eu-vision.googleapis.com'};
+const client = new vision.ImageAnnotatorClient(clientOptions);
 
 async function textDetectionFromImage(fileName, bucketName) {
   const [result] = await client.textDetection(`gs://${bucketName}/${fileName}`)
