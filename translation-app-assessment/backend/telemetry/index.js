@@ -15,12 +15,11 @@ app.use(bodyParser.json())
 app.use(cors())
 
 app.get('/', async (req, res) => {
-  var idDGASI = req.query.idDGASI;
+  const idDGASI = req.query.idDGASI;
   console.log('idDGASI:',idDGASI);
   const response = {
     status: 200,
-    idDGASI,
-    message: 'Hi! This is the telemetry service!'
+    message: 'get idDGASI service!'
   }
   res.send(response)
 })
