@@ -7,7 +7,7 @@ async function pdfToImage(data, outputFileName) {
     pngFile: true,
     singleFile: true,
   }
-  const res = await poppler.pdfToCairo(data, outputFileName, fileOptions)
+  await poppler.pdfToCairo(data, outputFileName, fileOptions)
   return fs.readFile(outputFileName + ".png").then((fileBuffer) => {
     return fileBuffer.toString("base64")
   })
