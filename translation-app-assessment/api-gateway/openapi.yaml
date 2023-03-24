@@ -2,7 +2,6 @@
 # Copyright 2020 Google LLC. This software is provided as-is, without warranty
 # or representation for any use or purpose. Your use of it is subject to your
 # agreement with Google.
-
 swagger: '2.0'
 info:
   title: API_ID optional-string
@@ -109,7 +108,7 @@ paths:
       summary: Translation API
       operationId: translation-post
       x-google-backend:
-        address: https://translation.googleapis.com/language/translate/v2 # TODO missing querystring spec
+        address: https://translation.googleapis.com/language/translate/v2
       responses:
         '200':
           description: A successful response
@@ -140,8 +139,8 @@ paths:
           schema:
             type: string
       security:
-        - admin-sa: [ ]
-        - guest-sa: [ ]
+        - admin-sa: []
+        - guest-sa: []
     options:
       summary: CORS
       operationId: translation-v3--options
@@ -164,8 +163,8 @@ paths:
           schema:
             type: string
       security:
-        - admin-sa: [ ]
-        - guest-sa: [ ]
+        - admin-sa: []
+        - guest-sa: []
     options:
       summary: CORS
       operationId: detect-text--options
@@ -188,8 +187,8 @@ paths:
           schema:
             type: string
       security:
-        - admin-sa: [ ]
-        - guest-sa: [ ]
+        - admin-sa: []
+        - guest-sa: []
     options:
       summary: CORS
       operationId: pdf-to-image--options
