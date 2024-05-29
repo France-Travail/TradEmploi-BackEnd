@@ -1,7 +1,7 @@
-import axios from "axios"
+import axios from "axios";
 import qs from "qs";
 import {AccessTokenResponse} from "../models/accessTokenResponse";
-import {CallBackResponse} from "../models/callBackResponse"
+import {CallBackResponse} from "../models/callBackResponse";
 
 require('dotenv').config()
 
