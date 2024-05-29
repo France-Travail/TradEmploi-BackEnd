@@ -6,47 +6,71 @@ const cors = require("cors")
 const { TranslationServiceClient } = require("@google-cloud/translate")
 const { translateWithDeepl } = require("./src/deepl")
 const { deeplLanguages } = require("./src/languages")
+const helmet = require('helmet')
+const cookieParser = require('cookie-parser')
+
+require("dotenv").config();
 const app = express()
 app.disable("x-powered-by")
 app.use(bodyParser.json())
-app.use(cors())
+const corsOptions = {
+  credentials: true,
+  origin: true,
+  methods: ["POST"]
+}
+app.use(cors(corsOptions))
+app.use(cookieParser())
+app.use(helmet())
 
 const location = "europe-west1"
 const apiEndpoint = "translate-eu.googleapis.com"
+const useDeepl = process.env.DEEPL_API_KEY
+const port = process.env.PORT || 8080
+const gcp = process.env.GCP_PROJECT
 
-app.post("/", async (req, res) => {
-  const sourceLanguageSplitted = req.body.sourceLanguageCode
+app.post("/", async (req, res, next) => {
+
+  try {
+    const translatedText = (await getTranslatedText([req.body.text], req.body.sourceLanguageCode, req.body.targetLanguageCode, 'plaintext'))[0]
+
+    const response = {
+      status: 200,
+      translatedText
+    }
+    res.send(response)
+  }
+  catch (e) {
+    next(e)
+  }
+})
+
+async function getTranslatedText(texts, sourceLanguageCode, targetLanguageCode, type) {
+  const sourceLanguageSplitted = sourceLanguageCode
       .split("-")[0]
       .toUpperCase()
-  const targetLanguageSplitted = req.body.targetLanguageCode
+  const targetLanguageSplitted = targetLanguageCode
       .split("-")[0]
       .toUpperCase()
-  const useDeepl = process.env.DEEPL_API_KEY
 
   const translatedText =
       deeplLanguages.includes(targetLanguageSplitted) &&
       deeplLanguages.includes(sourceLanguageSplitted) &&
       useDeepl
           ? await translateWithDeepl(
-              req.body.text,
+              texts,
               targetLanguageSplitted,
-              sourceLanguageSplitted
+              sourceLanguageSplitted,
+              type
           )
           : await translateText(
-              req.body.projectId,
-              req.body.text,
-              req.body.targetLanguageCode,
-              req.body.sourceLanguageCode
+              texts,
+              targetLanguageCode,
+              sourceLanguageCode,
+              type
           )
+  return translatedText;
+}
 
-  const response = {
-    status: 200,
-    translatedText,
-  }
-  res.send(response)
-})
-
-const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })
@@ -55,26 +79,36 @@ const clientOptions = { apiEndpoint }
 const translationClient = new TranslationServiceClient(clientOptions)
 
 async function translateText(
-    projectId,
-    text,
+    texts,
     targetLanguageCode,
-    sourceLanguageCode
+    sourceLanguageCode,
+    type
 ) {
-  console.log("Use google cloud translation")
+  console.log("Use google cloud translation from ", sourceLanguageCode, " to ", targetLanguageCode)
   const request = {
-    parent: `projects/${projectId}/locations/${location}`,
-    contents: [text],
-    mimeType: "text/plain",
+    parent: `projects/${gcp}/locations/${location}`,
+    contents: texts,
+    mimeType: type === 'html' ? "text/html" : "text/plain",
     sourceLanguageCode,
     targetLanguageCode,
   }
-
   const [response] = await translationClient.translateText(request)
 
-  return response.translations[0].translatedText
+  const textsTranslated = [];
+
+  response.translations.forEach(translation => {
+    textsTranslated.push(translation.translatedText)
+  })
+  return textsTranslated
 }
 
+app.use(function (err, req, res, /*unused*/ next) {
+  console.error(err)
+  res.status(500)
+  res.send({ error: err })
+})
+
 process.on("unhandledRejection", (err) => {
-  console.error(err.message)
+  console.error('unhandledRejection : ' + err.message)
   process.exitCode = 1
 })
