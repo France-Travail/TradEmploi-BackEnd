@@ -1,26 +1,31 @@
 "use strict"
 const express = require("express")
 const bodyParser = require("body-parser")
-const cors = require("cors")
 // Imports the Google Cloud Translation library
 const { TranslationServiceClient } = require("@google-cloud/translate")
 const { translateWithDeepl } = require("./src/deepl")
 const { deeplLanguages } = require("./src/languages")
 const helmet = require('helmet')
 const cookieParser = require('cookie-parser')
+require("dotenv");
 
-require("dotenv").config();
 const app = express()
 app.disable("x-powered-by")
 app.use(bodyParser.json())
-const corsOptions = {
-  credentials: true,
-  origin: true,
-  methods: ["POST"]
-}
-app.use(cors(corsOptions))
+
 app.use(cookieParser())
+
 app.use(helmet())
+const cors = require('cors');
+
+const corsOptions = {
+  origin: process.env.FRONTEND_URL, // Remplacez par l'origine de votre frontend Angular
+  methods: 'POST',
+  credentials: true, // Important si vous utilisez des sessions ou des cookies
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Csrf-Token'] // Autorisez des headers spécifiques
+};
+
+app.use(cors(corsOptions));
 
 const location = "europe-west1"
 const apiEndpoint = "translate-eu.googleapis.com"
@@ -28,7 +33,20 @@ const useDeepl = process.env.DEEPL_API_KEY
 const port = process.env.PORT || 8080
 const gcp = process.env.GCP_PROJECT
 
-app.post("/", async (req, res, next) => {
+// Middleware to verify CSRF token
+const verifyCsrfToken = (req, res, next) => {
+  const csrfTokenFromClient = req.headers['x-csrf-token'];
+  const csrfTokenFromSession = req.cookies.csrfToken;
+
+  if (csrfTokenFromClient && csrfTokenFromClient === csrfTokenFromSession) {
+    return next();
+  }
+
+  res.status(403).send('Invalid CSRF token');
+};
+
+
+app.post("/", verifyCsrfToken, async (req, res, next) => {
 
   try {
     const translatedText = (await getTranslatedText([req.body.text], req.body.sourceLanguageCode, req.body.targetLanguageCode, 'plaintext'))[0]
@@ -40,7 +58,7 @@ app.post("/", async (req, res, next) => {
     res.send(response)
   }
   catch (e) {
-    next(e)
+    next(e);
   }
 })
 
@@ -92,6 +110,7 @@ async function translateText(
     sourceLanguageCode,
     targetLanguageCode,
   }
+
   const [response] = await translationClient.translateText(request)
 
   const textsTranslated = [];
