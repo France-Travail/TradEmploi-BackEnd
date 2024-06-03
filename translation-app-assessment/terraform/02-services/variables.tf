@@ -1,28 +1,113 @@
-/*
- * Copyright 2020 Google LLC. This software is provided as-is, without warranty
- * or representation for any use or purpose. Your use of it is subject to your
- * agreement with Google.
- */
-
+#  ----  PROJECT  VARIABLES  ----
 variable "project_id" {
-  type        = string
   description = "Name of the GCP project"
-}
-variable "region" {
   type        = string
-  description = "Region to deploy resources to"
-  default     = "europe-west1"
 }
+
+variable "region" {
+  description = "Region for the project"
+  type        = string
+}
+
+#  ----  Cleanup Job schedule  VARIABLES  ----
+variable "schedule" {
+  description = "Schedule for Cloud Scheduler"
+  type        = string
+}
+
+#  ----  Global CloudRun  VARIABLES  ----
 variable "oidc_audience" {
   type        = string
   description = "Region to deploy resources to"
-  default     = "trad.pe.fr"
+  default     = "trad.sncf.fr"
 }
-variable "app_engine_region_mapping" {
-  type        = map(string)
-  description = "Current vs old fashioned region mapping for App Engine / Firebase compatibility"
-  default     = {
-    "europe-west1": "europe-west",
-    "us-central1": "us-central"
-  }
+
+#  ----  Translation CloudRun  VARIABLES  ----
+variable "translation_min_instance_count" {
+  description = "Minimum instance for CloudRun"
+  type        = string
+}
+variable "translation_max_instance_count" {
+  description = "Maximum instance for CloudRun"
+  type        = string
+}
+variable "translation_cpu_idle" {
+  description = "Is CloudRun CPU always required"
+  type        = string
+}
+variable "translation_startup_cpu_boost" {
+  description = "Is CloudRun startup_cpu_boost enabled"
+  type        = string
+}
+
+#  ----  Token-broker CloudRun  VARIABLES  ----
+variable "token_broker_min_instance_count" {
+  description = "Minimum instance for CloudRun"
+  type        = string
+}
+variable "token_broker_max_instance_count" {
+  description = "Maximum instance for CloudRun"
+  type        = string
+}
+variable "token_broker_cpu_idle" {
+  description = "Is CloudRun CPU always required"
+  type        = string
+}
+variable "token_broker_startup_cpu_boost" {
+  description = "Is CloudRun startup_cpu_boost enabled"
+  type        = string
+}
+
+#  ----  Telemetry CloudRun  VARIABLES  ----
+variable "telemetry_min_instance_count" {
+  description = "Minimum instance for CloudRun"
+  type        = string
+}
+variable "telemetry_max_instance_count" {
+  description = "Maximum instance for CloudRun"
+  type        = string
+}
+variable "telemetry_cpu_idle" {
+  description = "Is CloudRun CPU always required"
+  type        = string
+}
+variable "telemetry_startup_cpu_boost" {
+  description = "Is CloudRun startup_cpu_boost enabled"
+  type        = string
+}
+
+#  ----  Reporting CloudRun  VARIABLES  ----
+variable "reporting_min_instance_count" {
+  description = "Minimum instance for CloudRun"
+  type        = string
+}
+variable "reporting_max_instance_count" {
+  description = "Maximum instance for CloudRun"
+  type        = string
+}
+variable "reporting_cpu_idle" {
+  description = "Is CloudRun CPU always required"
+  type        = string
+}
+variable "reporting_startup_cpu_boost" {
+  description = "Is CloudRun startup_cpu_boost enabled"
+  type        = string
+}
+
+#  ----  Cleanup CloudRun  VARIABLES  ----
+variable "cleanup_min_instance_count" {
+  description = "Minimum instance for CloudRun"
+  type        = string
+}
+variable "cleanup_max_instance_count" {
+  description = "Maximum instance for CloudRun"
+  type        = string
+}
+variable "cleanup_cpu_idle" {
+  description = "Is CloudRun CPU always required"
+  type        = string
+}
+variable "cleanup_startup_cpu_boost" {
+  description = "Is CloudRun startup_cpu_boost enabled"
+  type        = string
 }
