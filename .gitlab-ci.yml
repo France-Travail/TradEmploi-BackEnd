@@ -1,28 +1,148 @@
-image: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
+
+image:
+  name: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
 before_script:
-  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE_PROD
-  - gcloud config set project $GCP_PROJECT_PROD
+# Téléchargement de terraform
+  - apk --no-cache add curl unzip
+  - TERRAFORM_VERSION=1.7.3
+  - curl -LO https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+  - unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin
+  - rm terraform_${TERRAFORM_VERSION}_linux_amd64.zip ; terraform --version
+# Configuration des commandes gcloud
+  - cp $GCLOUD_SERVICE_KEY_FILE gcloud-service-key.json
+  - gcloud auth activate-service-account --key-file gcloud-service-key.json
+  - gcloud config set project $GCP_PROJECT
 
 stages:
+  - build
   - deploy
+
+build-job-02-services:
+  stage: build
+  environment:
+    name: $CI_COMMIT_BRANCH
+  script:
+    - cd translation-app-assessment/terraform/02-services
+# création du fichier de variables tfvars en fonction des variables d'env définies dans la chaine CI/CD
+    - cp $TF_VAR_FILE terraform.tfvars
+    - sed -i "s/gcp_project/\"$GCP_PROJECT\"/g" terraform.tfvars
+# définition du nom du bucket contenant le tfstate dans le fichier config.tf
+    - sed -i "s/tf_state_bucket/\"$TF_STATE_BUCKET\"/g" config.tf
+# exécution du terraform
+    - terraform init
+    - terraform plan -out plan.out
+    - terraform apply plan.out
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      changes:
+        - translation-app-assessment/terraform/02-services/*
+    - if: '$CI_COMMIT_BRANCH == "uat"'
+      changes:
+        - translation-app-assessment/terraform/02-services/*
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - translation-app-assessment/terraform/02-services/*
+
+build-job-02-api-gw:
+  stage: build
+  environment:
+    name: $CI_COMMIT_BRANCH
+  script:
+    - cd translation-app-assessment/terraform/02-services
+# définition du nom du bucket contenant le tfstate dans le fichier config.tf
+    - sed -i "s/tf_state_bucket/\"$TF_STATE_BUCKET\"/g" config.tf
+# récupération des output du terraform 02-services
+    - terraform init
+    - terraform output > ../02-api-gw/output.txt
+    - cd ../02-api-gw
+# création du fichier de variables tfvars en fonction des variables d'env définies dans la chaine CI/CD
+    - cp $TF_VAR_FILE terraform.tfvars
+    - sed -i "s/gcp_project/\"$GCP_PROJECT\"/g" terraform.tfvars
+    - cat output.txt
+    - cat output.txt >> terraform.tfvars
+# définition du nom du bucket contenant le tfstate dans le fichier config.tf
+    - sed -i "s/tf_state_bucket/\"$TF_STATE_BUCKET\"/g" config.tf
+# exécution du terraform
+    - terraform init
+    - terraform plan -out plan.out
+    - terraform apply plan.out
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      changes:
+        - translation-app-assessment/terraform/02-api-gw/*
+        - translation-app-assessment/api-gateway/*
+    - if: '$CI_COMMIT_BRANCH == "uat"'
+      changes:
+        - translation-app-assessment/terraform/02-api-gw/*
+        - translation-app-assessment/api-gateway/*
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - translation-app-assessment/terraform/02-api-gw/*
+        - translation-app-assessment/api-gateway/*
+
+build-job-02-api-gw-m2m:
+  stage: build
+  environment:
+    name: $CI_COMMIT_BRANCH
+  script:
+    - cd translation-app-assessment/terraform/02-services
+# définition du nom du bucket contenant le tfstate dans le fichier config.tf
+    - sed -i "s/tf_state_bucket/\"$TF_STATE_BUCKET\"/g" config.tf
+# récupération des output du terraform 02-services
+    - terraform init
+    - terraform output > ../02-api-gw-m2m/output.txt
+    - cd ../02-api-gw-m2m
+# création du fichier de variables tfvars en fonction des variables d'env définies dans la chaine CI/CD
+    - cp $TF_VAR_FILE terraform.tfvars
+    - sed -i "s/gcp_project/\"$GCP_PROJECT\"/g" terraform.tfvars
+    - cat output.txt >> terraform.tfvars
+    - cat $API_GW_M2M_VAR_FILE >> terraform.tfvars
+# définition du nom du bucket contenant le tfstate dans le fichier config.tf
+    - sed -i "s/tf_state_bucket/\"$TF_STATE_BUCKET\"/g" config.tf
+# exécution du terraform
+    - terraform init
+    - terraform plan -out plan.out
+    - terraform apply plan.out
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+      changes:
+        - translation-app-assessment/terraform/02-api-gw-m2m/*
+        - translation-app-assessment/api-gateway-m2m/*
+    - if: '$CI_COMMIT_BRANCH == "uat"'
+      changes:
+        - translation-app-assessment/terraform/02-api-gw-m2m/*
+        - translation-app-assessment/api-gateway-m2m/*
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - translation-app-assessment/terraform/02-api-gw-m2m/*
+        - translation-app-assessment/api-gateway-m2m/*
+
 deploy-job:
   stage: deploy
-  environment:    
-    name: production
-    url: https://pole-emploi-trad.firebaseapp.com
+  environment:
+    name: $CI_COMMIT_BRANCH
   script:
-    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/translation
+    - cd translation-app-assessment/backend
+# création des fichiers de variables CloudBuild en fonction des variables d'env définies dans la chaine CI/CD
+    - cat $CB_DEFAULT_VAR_FILE > translation/cb_env_var_file.yaml ; cat $CB_DEFAULT_VAR_FILE > reporting/cb_env_var_file.yaml; cat $CB_DEFAULT_VAR_FILE > token-broker/cb_env_var_file.yaml; cat $CB_DEFAULT_VAR_FILE > telemetry/cb_env_var_file.yaml; cat $CB_DEFAULT_VAR_FILE > cleanup/cb_env_var_file.yaml
+    - if [ ! -z "CB_TRANSLATION_VAR_FILE" ]; then cat $CB_TRANSLATION_VAR_FILE >> translation/cb_env_var_file.yaml; fi
+    - if [ ! -z "CB_REPORTING_VAR_FILE" ]; then cat $CB_REPORTING_VAR_FILE >> reporting/cb_env_var_file.yaml; fi
+    - if [ ! -z "CB_TOKEN_BROKER_VAR_FILE" ]; then cat $CB_TOKEN_BROKER_VAR_FILE >> token-broker/cb_env_var_file.yaml; fi
+    - if [ ! -z "CB_TELEMETRY_VAR_FILE" ]; then cat $TELEMETRY_TELEMETRY_CB_VAR_FILE >> telemetry/cb_env_var_file.yaml; fi
+    - if [ ! -z "CB_CLEANUP_VAR_FILE" ]; then cat $CB_CLEANUP_VAR_FILE >> cleanup/cb_env_var_file.yaml; fi
+    - sed -i "s/gcp_project/\"$GCP_PROJECT\"/g" */cb_env_var_file.yaml
+# exécution des déploiements
+    - cd translation
     - gcloud builds submit .
-    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/reporting
-    # - gcloud builds submit .
-    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/token-broker
-    # - gcloud builds submit .
-    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/cleanup
-    # - gcloud builds submit .
-    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/telemetry
-    # - gcloud builds submit .
-    # - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/authentication
-    # - gcloud builds submit .
-  only:
-    refs:
-      - master
+    - cd ../reporting
+    - gcloud builds submit .
+    - cd ../token-broker
+    - gcloud builds submit .
+    - cd ../telemetry
+    - gcloud builds submit .
+    - cd ../cleanup
+    - gcloud builds submit .
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+    - if: '$CI_COMMIT_BRANCH == "uat"'
+    - if: '$CI_COMMIT_BRANCH == "master"'

@@ -42,4 +42,4 @@ substitutions:
   _IMAGE_TAG: v1
   _PORT: '8080'
 tags:
-  - sncf
+  - trad

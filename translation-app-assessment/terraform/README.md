@@ -33,7 +33,7 @@ Contains notification channels and alerts for the cleanup service monitoring.
     gsutil mb -b on -l europe-west1 -p $GCP_PROJECT_ID gs://$BUCKET_NAME
     ```
    Replace `$GCP_PROJECT_ID` above with the project where you would like to create the state bucket.
-   Replace `$BUCKET_NAME` above with the name you would like to give to the bucket. This name needs to be universally unique and DNS-friendly (lower case letters, numbers, hyphens). For example: `sncf-trad-<env>-tf-state`.
+   Replace `$BUCKET_NAME` above with the name you would like to give to the bucket. This name needs to be universally unique and DNS-friendly (lower case letters, numbers, hyphens). For example: `trad-<env>-tf-state`.
 
 4. Create a service account $SA_NAME with Owner permissions in your project, create and store its credentials in Google SecretManger.
    Run the following commands :

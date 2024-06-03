@@ -44,8 +44,8 @@ const scopes = [
 ]
 
 const serviceAccounts = {
-  anonymous: `pe-client-guest@${projectId}.iam.gserviceaccount.com`,
-  authenticated: `pe-client-admin@${projectId}.iam.gserviceaccount.com`
+  anonymous: `trad-client-guest@${projectId}.iam.gserviceaccount.com`,
+  authenticated: `trad-client-admin@${projectId}.iam.gserviceaccount.com`
 }
 
 const apiGatewayAudience = process.env.API_GATEWAY_AUDIENCE

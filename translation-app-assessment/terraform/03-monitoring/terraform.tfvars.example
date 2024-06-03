@@ -1,4 +1,4 @@
-project_id = "aiestaran-pe-tests-3"
+project_id = "trad-tests-3"
 
 notification_emails = {
   "Jane Doe" = "jane.doe@example.com",

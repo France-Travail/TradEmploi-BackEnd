@@ -19,7 +19,7 @@ variable "schedule" {
 variable "oidc_audience" {
   type        = string
   description = "Region to deploy resources to"
-  default     = "trad.sncf.fr"
+  default     = "trad.fr"
 }
 
 #  ----  Translation CloudRun  VARIABLES  ----
