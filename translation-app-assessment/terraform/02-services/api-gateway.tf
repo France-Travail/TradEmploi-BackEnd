@@ -7,14 +7,14 @@
 resource "google_api_gateway_api" "api" {
   provider = google-beta
   project  = var.project_id
-  api_id   = "pe-api"
+  api_id   = "trad-api"
 }
 
 resource "google_api_gateway_api_config" "api_cfg" {
   provider = google-beta
   project  = var.project_id
   api = google_api_gateway_api.api.api_id
-  api_config_id = "pe-api-config-${random_id.cfg_suffix.hex}"
+  api_config_id = "trad-api-config-${random_id.cfg_suffix.hex}"
   gateway_config {
     backend_config {
       google_service_account = google_service_account.api_gateway_sa.email
@@ -36,7 +36,7 @@ resource "google_api_gateway_gateway" "api_gw" {
   provider   = google-beta
   project    = var.project_id
   api_config = google_api_gateway_api_config.api_cfg.id
-  gateway_id = "pe-api-gw"
+  gateway_id = "trad-api-gw"
   region     = var.region
   timeouts {
     create = "15m" # default 6m seems too short

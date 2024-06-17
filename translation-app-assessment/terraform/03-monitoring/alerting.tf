@@ -8,7 +8,7 @@ resource "google_monitoring_alert_policy" "cleanup_alert" {
   project      = var.project_id
   display_name = "Alert on cleanup"
   combiner     = "OR"
-  notification_channels = [for item in values(tomap(google_monitoring_notification_channel.email)): item.name] 
+  notification_channels = [for item in values(tomap(google_monitoring_notification_channel.email)): item.name]
   conditions {
     display_name = "Cleanup not running"
     condition_absent {

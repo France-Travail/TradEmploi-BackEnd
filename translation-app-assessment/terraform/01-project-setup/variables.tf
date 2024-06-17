@@ -4,12 +4,24 @@
  * agreement with Google.
  */
 
+#  ----  PROJECT VARIABLES  ----
+
 variable "project_id" {
-  type        = string
   description = "Name of the GCP project"
-}
-variable "firebase_region" {
   type        = string
-  description = "Default Firebase region to use"
-  default     = "europe-west"
+}
+
+variable "region" {
+  description = "Region for the project"
+  type        = string
+}
+
+variable "firestore_region" {
+  type        = string
+  description = "Default Firestore region to use"
+}
+
+variable "firestore_database_name" {
+  type        = string
+  description = "Firestaore database name"
 }

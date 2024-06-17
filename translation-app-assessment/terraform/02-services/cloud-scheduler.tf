@@ -1,11 +1,11 @@
 locals {
-  cleanup_url = google_cloud_run_service.cleanup.status[0].url
+  cleanup_url = google_cloud_run_v2_service.cleanup.uri
 }
 
 resource "google_cloud_scheduler_job" "cleanup" {
-  name             = "pe-cleanup-job"
+  name             = "trad-cleanup-job"
   description      = "regularly runs the cleanup function"
-  schedule         = "0 * * * *"
+  schedule         = var.schedule
   time_zone        = "Europe/Paris"
   attempt_deadline = "45s"
   project          = var.project_id

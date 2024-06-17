@@ -1,5 +1,5 @@
 {
-  "name": "pe-auth",
+  "name": "trad-auth",
   "scripts": {
     "build": "npx tsc",
     "start": "tsc && node dist/index.js"

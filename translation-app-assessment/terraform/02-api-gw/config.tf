@@ -1,7 +1,7 @@
 terraform {
   backend "gcs" {
     bucket = tf_state_bucket
-    prefix = "03-monitoring"
+    prefix = "02-api-gateway"
     credentials = "../../../gcloud-service-key.json"
   }
 }

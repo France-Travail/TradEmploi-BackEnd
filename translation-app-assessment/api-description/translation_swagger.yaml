@@ -1,0 +1,85 @@
+openapi: 3.0.3
+info:
+  title: Trad - translation API
+  description: |-
+    Apis de traduction de Trad
+  version: 1.0.0
+
+security:
+  - bearerAuth: [ ]
+
+paths:
+  /api/translate:
+    post:
+      summary: Traduction d'un message
+      operationId: translate
+      requestBody:
+        description: Messages à traduire à partir d'une langue source vers une langue cible
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TranslateRequest'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranslateResponse'
+        '401':
+          description: Not Authorized
+        '403':
+          description: Forbidden
+
+components:
+  schemas:
+    TranslateRequest:
+      type: object
+      properties:
+        sourceLanguageCode:
+          description: Langue source du message à traduire au format ISO-639
+          type: string
+          example: fr-FR
+        targetLanguageCode:
+          description: Langue cible du message à traduire au format ISO-639
+          type: string
+          example: en-GB
+        texts:
+          description: Liste des messages à traduire
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 50
+          example: ["Bonjour", "Au revoir"]
+        type:
+          description: Format des messages à traduire
+          type: string
+          example: HTML
+          default: PLAINTEXT
+          enum:
+            - PLAINTEXT
+            - XML
+            - HTML
+      required:
+        - projectId
+        - sourceLanguageCode
+        - targetLanguageCode
+        - texts
+
+    TranslateResponse:
+      type: object
+      properties:
+        translatedTexts:
+          type: array
+          items:
+            type: string
+          example: ["Hello", "Bye"]
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Token fourni par la fédération d'identité OIDC

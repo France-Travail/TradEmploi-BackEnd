@@ -14,6 +14,8 @@ resource "google_project_service" "project_services" {
 
 locals {
   services = [
+    "firebase.googleapis.com",
+    "firebasedatabase.googleapis.com",
     "apigateway.googleapis.com",
     "cloudscheduler.googleapis.com",
     "run.googleapis.com",
@@ -24,6 +26,8 @@ locals {
     "speech.googleapis.com",
     "translate.googleapis.com",
     "cloudbuild.googleapis.com",
-    "firestore.googleapis.com"
+    "firestore.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "secretmanager.googleapis.com"
   ]
 }

@@ -5,7 +5,7 @@
 swagger: '2.0'
 info:
   title: API_ID optional-string
-  description: Sample API on API Gateway for PE
+  description: Sample API on API Gateway for Trad
   version: 1.0.0
 schemes:
   - https
@@ -238,7 +238,7 @@ x-google-management:
   metrics:
     # Define a metric for requests
     - name: "api-requests"
-      displayName: "PE API requests"
+      displayName: "TRAD API requests"
       valueType: INT64
       metricKind: DELTA
   quota:
