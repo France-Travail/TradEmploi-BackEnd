@@ -21,15 +21,15 @@ app.use(bodyParser.json())
 app.disable('x-powered-by')
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,  // Assurez-vous que cette origine correspond à l'URL de votre frontend
+  origin: process.env.FRONTEND_URL,
   credentials: true,  // Permet les requêtes incluant les cookies
-  allowedHeaders: 'Content-Type,Authorization',
-  methods: ['POST']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 };
 
 
-app.use(cors(corsOptions))
-app.use(helmet())
+app.use(helmet());
+app.use(cors(corsOptions));
 
 // Init project and services
 const projectId = process.env.GCP_PROJECT
@@ -137,7 +137,7 @@ app.post('/', async (req, res, next) => {
     const tokenPayload = req.headers['x-forwarded-authorization'] || req.headers.authorization
     const firebaseToken = tokenPayload ? tokenPayload.split('Bearer ')[1] : null
     // Générez le token CSRF JWT
-    const csrfToken = jwt.sign({ csrf: true }, process.env.CSRF_SECRET_KEY, { expiresIn: '1h' });
+    // const csrfToken = jwt.sign({ csrf: true }, process.env.CSRF_SECRET_KEY, { expiresIn: '1h' });
 
     if (!firebaseToken) {
       res.status(401).send('Authentication required')

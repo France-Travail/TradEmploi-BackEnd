@@ -16,13 +16,14 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 
 app.use(helmet())
+
 const cors = require('cors');
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL, // Remplacez par l'origine de votre frontend Angular
-  methods: 'POST',
-  credentials: true, // Important si vous utilisez des sessions ou des cookies
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Csrf-Token'] // Autorisez des headers spécifiques
+  origin: process.env.FRONTEND_URL,
+  credentials: true,  // Permet les requêtes incluant les cookies
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 };
 
 app.use(cors(corsOptions));
@@ -30,23 +31,10 @@ app.use(cors(corsOptions));
 const location = "europe-west1"
 const apiEndpoint = "translate-eu.googleapis.com"
 const useDeepl = process.env.DEEPL_API_KEY
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8082
 const gcp = process.env.GCP_PROJECT
 
-// Middleware to verify CSRF token
-const verifyCsrfToken = (req, res, next) => {
-  const csrfTokenFromClient = req.headers['x-csrf-token'];
-  const csrfTokenFromSession = req.cookies.csrfToken;
-
-  if (csrfTokenFromClient && csrfTokenFromClient === csrfTokenFromSession) {
-    return next();
-  }
-
-  res.status(403).send('Invalid CSRF token');
-};
-
-
-app.post("/", verifyCsrfToken, async (req, res, next) => {
+app.post("/", async (req, res, next) => {
 
   try {
     const translatedText = (await getTranslatedText([req.body.text], req.body.sourceLanguageCode, req.body.targetLanguageCode, 'plaintext'))[0]
