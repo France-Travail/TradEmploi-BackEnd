@@ -27,7 +27,6 @@ steps:
       - >-
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$_IMAGE_TAG,gcb-build-id=$BUILD_ID,$_LABELS
       - '--quiet'
-      - --env-vars-file=cb_env_var_file.yaml
     id: Deploy
     entrypoint: gcloud
 images:
