@@ -188,11 +188,11 @@ app.post('/', async (req, res, next) => {
       },
       apiGateway: apiGatewayToken,
     }
-    res.cookie('csrfToken', csrfToken, {
+/*    res.cookie('csrfToken', csrfToken, {
       httpOnly: false,
       secure: true,
       sameSite: 'None'
-    })
+    })*/
     res.send(response)
   } catch (e) {
     next(e)
