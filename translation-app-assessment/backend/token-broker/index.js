@@ -21,7 +21,7 @@ app.use(bodyParser.json())
 app.disable('x-powered-by')
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
+  origin: '*',
   credentials: true,  // Permet les requêtes incluant les cookies
   allowedHeaders: ['Content-Type', 'Authorization'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
