@@ -5,7 +5,6 @@
 'use strict'
 const express = require('express')
 const bodyParser = require('body-parser')
-const cors = require('cors')
 const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
 const {IAMCredentialsClient} = require('@google-cloud/iam-credentials')
@@ -20,16 +19,7 @@ const app = express()
 app.use(bodyParser.json())
 app.disable('x-powered-by')
 
-const corsOptions = {
-  origin: 'https://pole-emploi-trad-dev.firebaseapp.com/',
-  credentials: true,  // Permet les requêtes incluant les cookies
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-};
-
-
 app.use(helmet());
-app.use(cors(corsOptions));
 
 // Init project and services
 const projectId = process.env.GCP_PROJECT
