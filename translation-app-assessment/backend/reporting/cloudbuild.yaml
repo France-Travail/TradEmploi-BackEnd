@@ -7,7 +7,7 @@ steps:
     args:
       - build
       - '$_GCR_HOSTNAME/$PROJECT_ID/$_SERVICE_NAME:$_IMAGE_TAG'
-      - '--builder=gcr.io/buildpacks/builder:v1'
+      - '--builder=gcr.io/buildpacks/builder:latest'
     id: Buildpack
     entrypoint: pack
   - name: gcr.io/cloud-builders/docker
