@@ -5,7 +5,7 @@
  */
 
 resource "google_service_account" "token_broker_sa" {
-  account_id   = "pe-token-broker"
+  account_id   = "trad-token-broker"
   display_name = "Token Broker Service Account"
   project      = var.project_id
 }
