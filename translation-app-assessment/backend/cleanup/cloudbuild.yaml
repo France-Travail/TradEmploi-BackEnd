@@ -3,6 +3,12 @@
 # or representation for any use or purpose. Your use of it is subject to your
 # agreement with Google.
 steps:
+  # Étape pour installer les dépendances npm
+  - name: node:12 # Utilisez une image Node.js appropriée
+    entrypoint: /bin/sh
+    args:
+      - '-c'
+      - 'cd /workspace && npm install cors cookie-parser'
   - name: gcr.io/k8s-skaffold/pack
     args:
       - build
