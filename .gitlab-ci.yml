@@ -3,7 +3,7 @@ before_script:
   - apk add --no-cache curl bash
   - curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
   - export NVM_DIR="$HOME/.nvm"
-  - sh -c '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
+  - source "$NVM_DIR/nvm.sh"
   - nvm install 21.7.3 # Remplacez 14 par la version de Node.js que vous souhaitez utiliser
   - nvm use 21.7.3
   - nvm alias default 21.7.3
