@@ -27,4 +27,4 @@ deploy-job:
     - gcloud builds submit .
   only:
     refs:
-      - develop
+      - open-source
