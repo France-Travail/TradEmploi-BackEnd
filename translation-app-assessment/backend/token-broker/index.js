@@ -5,6 +5,7 @@
 'use strict'
 const express = require('express')
 const bodyParser = require('body-parser')
+const cors = require('cors')
 const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
 const {IAMCredentialsClient} = require('@google-cloud/iam-credentials')
@@ -20,6 +21,7 @@ app.use(bodyParser.json())
 app.disable('x-powered-by')
 
 app.use(helmet());
+app.use(cors({ origin: true, credentials: true }));
 
 // Init project and services
 const projectId = process.env.GCP_PROJECT
