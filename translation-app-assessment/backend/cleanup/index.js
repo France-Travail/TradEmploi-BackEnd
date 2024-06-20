@@ -101,7 +101,7 @@ app.post('/', async (req, res, next) => {
             deletionPromises.push(collection.doc(docSnapshot.id).delete())
         }
         await Promise.all(deletionPromises)
-        await cleanRates();
+        if(process.env.ID_BOT !== undefined) await cleanRatesFromBot();
         await writeMonitoring()
         console.log(`deleted chats, size:${querySnapshot.size}`)
 
@@ -123,15 +123,15 @@ app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
 
-async function cleanRates() {
-    // Delete rates created by the end to end tests robot SD34N140
+async function cleanRatesFromBot() {
+    // Delete rates created by the end to end tests robot process.env.ID_BOT
     const deletionPromises = []
     const collection = firestore.collection('rates')
-    const querySnapshot = await collection.where('user', '=', 'SD34N140').get()
+    const querySnapshot = await collection.where('user', '=', `${process.env.ID_BOT}`).get()
     for (const docSnapshot of querySnapshot.docs) {
         deletionPromises.push(collection.doc(docSnapshot.id).delete())
     }
-    console.log(`rates deleted, size:${deletionPromises.length},user: SD34N140`);
+    console.log(`rates deleted, size:${deletionPromises.length},user: ${process.env.ID_BOT}`);
     await Promise.all(deletionPromises)
 }
 
@@ -340,7 +340,7 @@ async function createLanguagesFromRates() {
                 const data = doc.data();
                 const language = data.language + '';
                 const user = data.user + '';
-                const excludedUsers = ['SD34N140'];
+                const excludedUsers = [process.env.ID_BOT];
                 if (language && !excludedUsers.includes(user)) {
                     languagesSelected = languagesSelected.concat(language.split(','));
                     if (data.grades && data.grades.length > 0) {

@@ -13,12 +13,12 @@ deploy-job:
 #    - gcloud builds submit .
 #    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/reporting
 #    - gcloud builds submit .
-    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/token-broker
-    - gcloud builds submit .
+#    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/token-broker
+#    - gcloud builds submit .
     - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/cleanup
     - gcloud builds submit .
-    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/telemetry
-    - gcloud builds submit .
+#    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/telemetry
+#    - gcloud builds submit .
 #    - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/authentication
 #    - gcloud builds submit .
     #- cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/detect-text
