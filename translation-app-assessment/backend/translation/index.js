@@ -22,7 +22,7 @@ const cors = require('cors');
 const corsOptions = {
   origin: 'https://pole-emploi-trad-dev.firebaseapp.com',
   credentials: true,  // Permet les requêtes incluant les cookies
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 };
 
@@ -31,7 +31,7 @@ app.use(cors(corsOptions));
 const location = "europe-west1"
 const apiEndpoint = "translate-eu.googleapis.com"
 const useDeepl = process.env.DEEPL_API_KEY
-const port = process.env.PORT || 8082
+const port = process.env.PORT || 8080
 const gcp = process.env.GCP_PROJECT
 
 app.post("/", async (req, res, next) => {
