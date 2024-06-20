@@ -5,15 +5,12 @@
 'use strict'
 const express = require('express')
 const bodyParser = require('body-parser')
-const cors = require('cors')
 const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
 const {IAMCredentialsClient} = require('@google-cloud/iam-credentials')
 const helmet = require('helmet')
-const jwt = require('jsonwebtoken');
 const sha1 = require('sha1')
-const crypto = require('crypto');
-require('dotenv').config({ path: require('find-config')('.env') })
+require('dotenv');
 
 // Init express.js app
 const app = express()
@@ -21,7 +18,17 @@ app.use(bodyParser.json())
 app.disable('x-powered-by')
 
 app.use(helmet());
-app.use(cors({ origin: true, credentials: true }));
+
+const cors = require('cors');
+
+const corsOptions = {
+  origin: 'https://pole-emploi-trad-dev.firebaseapp.com',
+  credentials: true,  // Permet les requêtes incluant les cookies
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+};
+
+app.use(cors(corsOptions));
 
 // Init project and services
 const projectId = process.env.GCP_PROJECT
@@ -128,6 +135,7 @@ app.post('/', async (req, res, next) => {
     // behind API Gateway, so take that case into account.
     const tokenPayload = req.headers['x-forwarded-authorization'] || req.headers.authorization
     const firebaseToken = tokenPayload ? tokenPayload.split('Bearer ')[1] : null
+
     // Générez le token CSRF JWT
     // const csrfToken = jwt.sign({ csrf: true }, process.env.CSRF_SECRET_KEY, { expiresIn: '1h' });
 
