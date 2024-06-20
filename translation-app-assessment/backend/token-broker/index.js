@@ -25,7 +25,7 @@ const corsOptions = {
   origin: process.env.FRONTEND_URL,
   credentials: true,  // Permet les requêtes incluant les cookies
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET'],
 };
 
 app.use(cors(corsOptions));

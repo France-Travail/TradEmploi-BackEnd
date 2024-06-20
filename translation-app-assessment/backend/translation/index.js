@@ -20,10 +20,10 @@ app.use(helmet())
 const cors = require('cors');
 
 const corsOptions = {
-  origin: 'https://pole-emploi-trad-dev.firebaseapp.com',
+  origin: process.env.FRONTEND_URL,
   credentials: true,  // Permet les requêtes incluant les cookies
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['POST'],
 };
 
 app.use(cors(corsOptions));
