@@ -10,10 +10,10 @@ const cookieParser = require('cookie-parser')
 require('dotenv')
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL, // Remplacez par l'origine de votre frontend Angular
-  methods: 'GET',
-  credentials: true, // Important si vous utilisez des sessions ou des cookies
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Csrf-Token'] // Autorisez des headers spécifiques
+  origin: process.env.FRONTEND_URL,
+  credentials: true,  // Permet les requêtes incluant les cookies
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
+  methods: ['POST'],
 };
 const app = express()
 app.use(cors(corsOptions));
@@ -37,7 +37,7 @@ const verifyCsrfToken = (req, res, next) => {
 };
 
 
-app.get('/', verifyCsrfToken, async (req, res, next) => {
+app.get('/', async (req, res, next) => {
   try {
     var idDGASI = req.query.idDGASI;
     console.log('idDGASI:', idDGASI);

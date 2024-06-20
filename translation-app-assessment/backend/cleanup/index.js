@@ -16,14 +16,14 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
 app.disable('x-powered-by')
-require("dotenv").config({path:'../../../.env'});
+require("dotenv");
 const cors = require('cors');
 
 const corsOptions = {
-    origin: process.env.FRONTEND_URL, // Remplacez par l'origine de votre frontend Angular
-    methods: 'POST',
-    credentials: true, // Important si vous utilisez des sessions ou des cookies
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Csrf-Token'] // Autorisez des headers spécifiques
+    origin: process.env.FRONTEND_URL,
+    credentials: true,  // Permet les requêtes incluant les cookies
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
+    methods: ['GET'],
 };
 
 app.use(cors(corsOptions));
@@ -89,7 +89,7 @@ const verifyCsrfToken = (req, res, next) => {
 };
 
 
-app.post('/', verifyCsrfToken, async (req, res, next) => {
+app.post('/', async (req, res, next) => {
     try {
         await kpi()
         // Delete chat that have been expired for an hour or longer

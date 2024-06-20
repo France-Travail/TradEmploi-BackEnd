@@ -8,7 +8,7 @@ steps:
     entrypoint: /bin/sh
     args:
       - '-c'
-      - 'cd /workspace && npm install && npm install cors cookie-parser'
+      - 'cd /workspace && npm install'
   - name: gcr.io/k8s-skaffold/pack
     args:
       - build
