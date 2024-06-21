@@ -1,0 +1,48 @@
+swagger: '2.0'
+info:
+  title: API_ID optional-string
+  description: Sample API on API Gateway for Trad
+  version: 1.0.0
+schemes:
+  - https
+produces:
+  - application/json
+host: trad.fr
+paths:
+  /api/translate:
+    post:
+      summary: Translation v3 api endpoint
+      operationId: translation-v3--post
+      x-google-backend:
+        address: "${translation_url}/api/translate"
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string
+      security:
+        - idp_m2m_sa: []
+securityDefinitions:
+  idp_m2m_sa:
+    authorizationUrl: ""
+    flow: "implicit"
+    type: "oauth2"
+    x-google-issuer: ${google_issuer}
+    x-google-jwks_uri: ${google_jwks}
+    x-google-audiences: ${google_audience}
+
+x-google-management:
+  metrics:
+    # Define a metric for requests
+    - name: "api-requests"
+      displayName: "TRAD API requests"
+      valueType: INT64
+      metricKind: DELTA
+  quota:
+    limits:
+      # Define the limit or the read-requests metric.
+      - name: "api-limit"
+        metric: "api-requests"
+        unit: "1/min/{project}"
+        values:
+          STANDARD: 1000

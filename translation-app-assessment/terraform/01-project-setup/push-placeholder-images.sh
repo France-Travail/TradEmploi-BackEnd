@@ -2,16 +2,18 @@
 
 gcloud auth configure-docker
 
-docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT/pe-token-broker:v1
-docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT/pe-reporting:v1
-docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT/pe-telemetry:v1
-docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT/pe-cleanup:v1
-docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT/pe-translation:v1
-docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT/pe-authentication:v1
+docker pull us-docker.pkg.dev/cloudrun/container/hello
 
-docker push eu.gcr.io/$GCP_PROJECT/pe-token-broker:v1
-docker push eu.gcr.io/$GCP_PROJECT/pe-reporting:v1
-docker push eu.gcr.io/$GCP_PROJECT/pe-telemetry:v1
-docker push eu.gcr.io/$GCP_PROJECT/pe-cleanup:v1
-docker push eu.gcr.io/$GCP_PROJECT/pe-translation:v1
-docker push eu.gcr.io/$GCP_PROJECT/pe-authentication:v1
+docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT_ID/trad-token-broker:v1
+docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT_ID/trad-reporting:v1
+docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT_ID/trad-telemetry:v1
+docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT_ID/trad-cleanup:v1
+docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT_ID/trad-translation:v1
+docker tag us-docker.pkg.dev/cloudrun/container/hello eu.gcr.io/$GCP_PROJECT_ID/trad-authentication:v1
+
+docker push eu.gcr.io/$GCP_PROJECT_ID/trad-token-broker:v1
+docker push eu.gcr.io/$GCP_PROJECT_ID/trad-reporting:v1
+docker push eu.gcr.io/$GCP_PROJECT_ID/trad-telemetry:v1
+docker push eu.gcr.io/$GCP_PROJECT_ID/trad-cleanup:v1
+docker push eu.gcr.io/$GCP_PROJECT_ID/trad-translation:v1
+docker push eu.gcr.io/$GCP_PROJECT_ID/trad-authentication:v1

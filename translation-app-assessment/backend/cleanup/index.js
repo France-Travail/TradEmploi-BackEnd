@@ -12,13 +12,25 @@ const Monitoring = require('@google-cloud/monitoring')
 // Init express.js app
 const app = express()
 app.use(bodyParser.json())
-app.disable('x-powered-by')
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
 
+app.disable('x-powered-by')
+require("dotenv").config({path:'../../../.env'});
+const cors = require('cors');
+
+const corsOptions = {
+    origin: process.env.FRONTEND_URL, // Remplacez par l'origine de votre frontend Angular
+    methods: 'POST',
+    credentials: true, // Important si vous utilisez des sessions ou des cookies
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Csrf-Token'] // Autorisez des headers spécifiques
+};
+
+app.use(cors(corsOptions));
 // Init project and services
 const projectId = process.env.GCP_PROJECT
 firebaseAdmin.initializeApp()
 const firestore = firebaseAdmin.firestore()
-
 // Function to write monitoring "heartbeat" that cleanup has run
 const writeMonitoring = async () => {
     const monitoringOptions = {
@@ -47,7 +59,7 @@ const writeMonitoring = async () => {
                 project_id: projectId,
                 task_id: 'cleanup',
                 location: process.env.LOCATION || 'global',
-                namespace: 'pole-emploi',
+                namespace: 'traduction',
                 job: 'cleanup'
             }
         },
@@ -64,26 +76,49 @@ app.get('/', async (req, res) => {
     console.log("hello");
 })
 
-app.post('/', async (req, res) => {
-    await kpi()
-    // Delete chat that have been expired for an hour or longer
-    const deletionPromises = []
-    const collection = firestore.collection('chats')
-    const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
-    const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
-    for (const docSnapshot of querySnapshot.docs) {
-        deletionPromises.push(collection.doc(docSnapshot.id).delete())
-    }
-    await Promise.all(deletionPromises)
-    await cleanRates();
-    await writeMonitoring()
-    console.log(`deleted chats, size:${querySnapshot.size}`)
+// Middleware to verify CSRF token
+const verifyCsrfToken = (req, res, next) => {
+    const csrfTokenFromClient = req.headers['x-csrf-token'];
+    const csrfTokenFromSession = req.cookies.csrfToken;
 
-    await createLanguagesFromRates();
-    res.status(204).send()
+    if (csrfTokenFromClient && csrfTokenFromClient === csrfTokenFromSession) {
+        return next();
+    }
+
+    res.status(403).send('Invalid CSRF token');
+};
+
+
+app.post('/', verifyCsrfToken, async (req, res, next) => {
+    try {
+        await kpi()
+        // Delete chat that have been expired for an hour or longer
+        const deletionPromises = []
+        const collection = firestore.collection('chats')
+        const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
+        const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
+        for (const docSnapshot of querySnapshot.docs) {
+            deletionPromises.push(collection.doc(docSnapshot.id).delete())
+        }
+        await Promise.all(deletionPromises)
+        await cleanRates();
+        await writeMonitoring()
+        console.log(`deleted chats, size:${querySnapshot.size}`)
+
+        await createLanguagesFromRates();
+        res.status(204).send()
+    } catch(e) {
+        next(e)
+    }
 })
 
-const port = process.env.PORT || 8080
+app.use(function (err, req, res, /*unused*/ next) {
+    console.error(err)
+    res.status(500)
+    res.send({ error: err })
+})
+
+const port = process.env.PORT || 8083
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
@@ -309,7 +344,7 @@ async function createLanguagesFromRates() {
                 if (language && !excludedUsers.includes(user)) {
                     languagesSelected = languagesSelected.concat(language.split(','));
                     if (data.grades && data.grades.length > 0) {
-                        const grade = data.grades[1];
+                        const grade = data.grades[0];
                         const existingItem = langaugesAverageRate.get(language);
                         if (existingItem) {
                             langaugesAverageRate.set(language, existingItem + grade);

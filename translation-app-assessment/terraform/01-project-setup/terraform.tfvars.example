@@ -1,2 +1,5 @@
-project_id = "pole-emploi-trad-open"
+project_id = "my-project-id"
+region = "europe-west1"
 
+firestore_region = "eur3"
+firestore_database_name = "database-name"

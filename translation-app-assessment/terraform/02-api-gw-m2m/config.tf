@@ -1,10 +1,13 @@
+# --- TERRAFORM CONFIG ----------------------------------------------
+
 terraform {
   backend "gcs" {
     bucket = tf_state_bucket
-    prefix = "03-monitoring"
+    prefix = "02-api-gateway-m2m"
     credentials = "../../../gcloud-service-key.json"
   }
 }
+
 
 # Terraform Providers
 

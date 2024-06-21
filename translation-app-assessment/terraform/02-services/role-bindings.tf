@@ -62,49 +62,40 @@ resource "google_service_account_iam_member" "client_admin_token_creator" {
 # allow API Gateway Service Account to invoke all Cloud Run services
 # (ie, in order to reach Cloud Run services, you need to go through API Gateway first)
 resource "google_cloud_run_service_iam_member" "token_broker" {
-  location = google_cloud_run_service.token_broker.location
-  project = google_cloud_run_service.token_broker.project
-  service = google_cloud_run_service.token_broker.name
+  location = google_cloud_run_v2_service.token_broker.location
+  project = google_cloud_run_v2_service.token_broker.project
+  service = google_cloud_run_v2_service.token_broker.name
   role = "roles/run.invoker"
   member = "serviceAccount:${google_service_account.api_gateway_sa.email}"
 }
 resource "google_cloud_run_service_iam_member" "reporting" {
-  location = google_cloud_run_service.reporting.location
-  project = google_cloud_run_service.reporting.project
-  service = google_cloud_run_service.reporting.name
+  location = google_cloud_run_v2_service.reporting.location
+  project = google_cloud_run_v2_service.reporting.project
+  service = google_cloud_run_v2_service.reporting.name
   role = "roles/run.invoker"
   member = "serviceAccount:${google_service_account.api_gateway_sa.email}"
 }
 resource "google_cloud_run_service_iam_member" "telemetry" {
-  location = google_cloud_run_service.telemetry.location
-  project = google_cloud_run_service.telemetry.project
-  service = google_cloud_run_service.telemetry.name
+  location = google_cloud_run_v2_service.telemetry.location
+  project = google_cloud_run_v2_service.telemetry.project
+  service = google_cloud_run_v2_service.telemetry.name
   role = "roles/run.invoker"
   member = "serviceAccount:${google_service_account.api_gateway_sa.email}"
 }
 
 resource "google_cloud_run_service_iam_member" "translation" {
-  location = google_cloud_run_service.translation.location
-  project = google_cloud_run_service.translation.project
-  service = google_cloud_run_service.translation.name
+  location = google_cloud_run_v2_service.translation.location
+  project = google_cloud_run_v2_service.translation.project
+  service = google_cloud_run_v2_service.translation.name
   role = "roles/run.invoker"
   member = "serviceAccount:${google_service_account.api_gateway_sa.email}"
 }
 
-# Allow unauthenticated users to invoke the Authentication service
-resource "google_cloud_run_service_iam_member" "authentication" {
-  location = google_cloud_run_service.authentication.location
-  project = google_cloud_run_service.authentication.project
-  service = google_cloud_run_service.authentication.name
-  role     = "roles/run.invoker"
-  member   = "allUsers"
-}
-
 # allow Cleanup Job Service Account to invoke Cleanup Cloud Run service
 resource "google_cloud_run_service_iam_member" "cleanup" {
-  location = google_cloud_run_service.cleanup.location
-  project = google_cloud_run_service.cleanup.project
-  service = google_cloud_run_service.cleanup.name
+  location = google_cloud_run_v2_service.cleanup.location
+  project = google_cloud_run_v2_service.cleanup.project
+  service = google_cloud_run_v2_service.cleanup.name
   role = "roles/run.invoker"
   member = "serviceAccount:${google_service_account.cleanup_job_sa.email}"
 }
@@ -116,12 +107,11 @@ data "google_project" "project" {
 
 locals {
   cloud_run_service_names = [
-    google_cloud_run_service.token_broker.name,
-    google_cloud_run_service.reporting.name,
-    google_cloud_run_service.telemetry.name,
-    google_cloud_run_service.cleanup.name,
-    google_cloud_run_service.translation.name,
-    google_cloud_run_service.authentication.name
+    google_cloud_run_v2_service.token_broker.name,
+    google_cloud_run_v2_service.reporting.name,
+    google_cloud_run_v2_service.telemetry.name,
+    google_cloud_run_v2_service.cleanup.name,
+    google_cloud_run_v2_service.translation.name,
   ]
   cloud_run_service_account_ids = [
     google_service_account.token_broker_sa.account_id,
@@ -129,7 +119,6 @@ locals {
     google_service_account.reporting_sa.account_id,
     google_service_account.telemetry_sa.account_id,
     google_service_account.translation_sa.account_id,
-    google_service_account.authentication_sa.account_id
   ]
 }
 

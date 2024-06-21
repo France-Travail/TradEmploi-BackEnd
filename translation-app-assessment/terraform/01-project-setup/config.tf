@@ -1,12 +1,23 @@
-/*
- * Copyright 2020 Google LLC. This software is provided as-is, without warranty
- * or representation for any use or purpose. Your use of it is subject to your
- * agreement with Google.
- */
-
 terraform {
   backend "gcs" {
-    bucket = "pe-trad-tf-state"
-    prefix = "pe-trad/01-services"
+    bucket = tf_state_bucket
+    prefix = "01-project-setup"
+    credentials = "../../../gcloud-service-key.json"
   }
+}
+
+# Terraform Providers
+
+# --- GOOGLE -------------------------------------------------------
+# Define default parameters (project, region, zone) for Google provider
+provider "google" {
+  project     = var.project_id
+  region      = var.region
+  credentials = "../../../gcloud-service-key.json"
+}
+
+provider "google-beta" {
+  project     = var.project_id
+  region      = var.region
+  credentials = "../../../gcloud-service-key.json"
 }

@@ -24,7 +24,7 @@ DONT FORGET TO ADD URL !!!
 ```
 $ firebase use dev
 $ npm start
-$ Open http://localhost:5000/pole-emploi-trad-dev/us-central1/api
+$ Open http://localhost:5000/trad-dev/us-central1/api
 ```
 ## Obtain a login token
 
