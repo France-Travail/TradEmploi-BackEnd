@@ -5,26 +5,34 @@
 'use strict'
 const express = require('express')
 const bodyParser = require('body-parser')
-const cors = require('cors')
 const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
 const {IAMCredentialsClient} = require('@google-cloud/iam-credentials')
-
+const helmet = require('helmet')
+const sha1 = require('sha1')
+require('dotenv');
 
 // Init express.js app
 const app = express()
 app.use(bodyParser.json())
 app.disable('x-powered-by')
 
+app.use(helmet());
+
+const cors = require('cors');
+
 const corsOptions = {
-  methods: ['GET', 'POST', 'PUT'],
-  maxAge: 3600
-}
-app.use(cors(corsOptions))
+  origin: process.env.FRONTEND_URL,
+  credentials: true,  // Permet les requêtes incluant les cookies
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
+  methods: ['POST'],
+};
+
+app.use(cors(corsOptions));
 
 // Init project and services
 const projectId = process.env.GCP_PROJECT
-firebaseAdmin.initializeApp()
+firebaseAdmin.initializeApp();
 const firestore = firebaseAdmin.firestore()
 
 // Init IAM creadentials client
@@ -36,7 +44,7 @@ const scopes = [
 
 const serviceAccounts = {
   anonymous: `pe-client-guest@${projectId}.iam.gserviceaccount.com`,
-  password: `pe-client-admin@${projectId}.iam.gserviceaccount.com`
+  authenticated: `pe-client-admin@${projectId}.iam.gserviceaccount.com`
 }
 
 const apiGatewayAudience = process.env.API_GATEWAY_AUDIENCE
@@ -120,71 +128,89 @@ async function getExpiryFromRoom(roomId, userId) {
   return authorized && expiryDate
 }
 
-app.post('/', async (req, res) => {
-  // First, verify the Firebase token.
-  // Authorization token will come as x-forwarded-authorization if invoking
-  // behind API Gateway, so take that case into account.
-  const tokenPayload = req.headers['x-forwarded-authorization'] || req.headers.authorization
-  const firebaseToken = tokenPayload ? tokenPayload.split('Bearer ')[1] : null
-
-  if (!firebaseToken) {
-    res.status(401).send('Authentication required')
-    return
-  }
-
-  let firebaseVerification
+app.post('/', async (req, res, next) => {
   try {
-    firebaseVerification = await firebaseAdmin.auth().verifyIdToken(firebaseToken)
-  } catch (err) {
-    console.log('error verifying with Firebase:', err.code, err.message)
-    res.status(403).send('Authentication failed')
-    return
-  }
+    // First, verify the Firebase token.
+    // Authorization token will come as x-forwarded-authorization if invoking
+    // behind API Gateway, so take that case into account.
+    const tokenPayload = req.headers['x-forwarded-authorization'] || req.headers.authorization
+    const firebaseToken = tokenPayload ? tokenPayload.split('Bearer ')[1] : null
 
-  // Next determine if this is an admin user or a guest
-  const userId = firebaseVerification.sub
-  const authProvider = firebaseVerification.firebase.sign_in_provider
-  const targetServiceAccount = serviceAccounts[authProvider]
-  console.log('logged in user:', userId, 'auth provider:', authProvider)
+    // Générez le token CSRF JWT
+    // const csrfToken = jwt.sign({ csrf: true }, process.env.CSRF_SECRET_KEY, { expiresIn: '1h' });
 
-  // If this user is anonymous we also need to check the chat room and get or set the expiry date
-  let expiryDate
-  if (authProvider === 'anonymous') {
-    if (!req.body.roomId) {
-      res.send(400, 'Room ID is missing')
+    if (!firebaseToken) {
+      res.status(401).send('Authentication required')
       return
     }
-    if (req.body.firstname) {
-      await addGuest(req.body.roomId, userId, req.body.firstname)
-      res.send(200, "GuestId added")
+
+    let firebaseVerification
+    try {
+      firebaseVerification = await firebaseAdmin.auth().verifyIdToken(firebaseToken)
+    } catch (err) {
+      console.log('error verifying with Firebase:', err.code, err.message)
+      res.status(403).send('Authentication failed')
       return
+    }
+
+    // Next determine if this is an admin user or a guest
+    const userId = firebaseVerification.sub
+    const authProvider = firebaseVerification.firebase.sign_in_provider === 'anonymous' ? 'anonymous' : 'authenticated'
+    const targetServiceAccount = serviceAccounts[authProvider]
+    console.log('logged in user:', sha1(userId), 'auth provider:', authProvider)
+
+    // If this user is anonymous we also need to check the chat room and get or set the expiry date
+    let expiryDate
+    if (authProvider === 'anonymous') {
+      if (!req.body.roomId) {
+        res.send(400, 'Room ID is missing')
+        return
+      }
+      if (req.body.firstname) {
+        await addGuest(req.body.roomId, userId, req.body.firstname)
+        res.send(200, "GuestId added")
+        return
+      } else {
+        expiryDate = await getExpiryFromRoom(req.body.roomId, userId)
+      }
     } else {
-      expiryDate = await getExpiryFromRoom(req.body.roomId, userId)
+      // admin expiry defaults to 1 hour from current time
+      expiryDate = new Moment().add(1, 'hours')
     }
-  } else {
-    // admin expiry defaults to 1 hour from current time
-    expiryDate = new Moment().add(1, 'hours')
-  }
 
-  // fail if we don't have an expiry date (e.g. room doesn't exist or has expired if this is a guest)
-  if (!expiryDate) {
-    console.log('guest access denied')
-    res.status(403).send("You're not allowed in this room")
-    return
-  }
+    // fail if we don't have an expiry date (e.g. room doesn't exist or has expired if this is a guest)
+    if (!expiryDate) {
+      console.log('guest access denied')
+      res.status(403).send("You're not allowed in this room")
+      return
+    }
 
-  // finally generate and return the token
-  const gcpTokenPromise = generateGcpToken(expiryDate, targetServiceAccount)
-  const apiGatewayTokenPromise = generateApiGatewayToken(apiGatewayAudience, expiryDate, targetServiceAccount)
-  const [gcpToken, apiGatewayToken] = await Promise.all([gcpTokenPromise, apiGatewayTokenPromise])
-  const response = {
-    gcp: {
-      token: gcpToken[0].accessToken,
-      expireTime: gcpToken[0].expireTime
-    },
-    apiGateway: apiGatewayToken
+    // finally generate and return the token
+    const gcpTokenPromise = generateGcpToken(expiryDate, targetServiceAccount)
+    const apiGatewayTokenPromise = generateApiGatewayToken(apiGatewayAudience, expiryDate, targetServiceAccount)
+    const [gcpToken, apiGatewayToken] = await Promise.all([gcpTokenPromise, apiGatewayTokenPromise])
+    const response = {
+      gcp: {
+        token: gcpToken[0].accessToken,
+        expireTime: gcpToken[0].expireTime
+      },
+      apiGateway: apiGatewayToken,
+    }
+/*    res.cookie('csrfToken', csrfToken, {
+      httpOnly: false,
+      secure: true,
+      sameSite: 'None'
+    })*/
+    res.send(response)
+  } catch (e) {
+    next(e)
   }
-  res.send(response)
+})
+
+app.use(function (err, req, res, /*unused*/ next) {
+  console.error(err)
+  res.status(500)
+  res.send({ error: err })
 })
 
 async function addGuest(roomId, userId, firstname) {

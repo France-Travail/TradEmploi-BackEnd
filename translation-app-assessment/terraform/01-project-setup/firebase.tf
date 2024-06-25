@@ -6,14 +6,13 @@ resource "google_firebase_project" "default" {
   project  = var.project_id
 }
 
-resource "google_firebase_project_location" "default" {
-    provider = google-beta
-    project = google_firebase_project.default.project
+resource "google_firestore_database" "database" {
+  project                 = var.project_id
+  name                    = "trad-prod"
+  location_id             = "eur3"
+  type                    = "FIRESTORE_NATIVE"
+  delete_protection_state = "DELETE_PROTECTION_ENABLED"
+  deletion_policy         = "DELETE"
 
-    location_id = var.firebase_region
-
-    provisioner "local-exec" {
-      command = "gcloud alpha firestore databases create --region ${var.firebase_region} --project ${var.project_id}"
-    }
+  depends_on = [google_project_service.project_services]
 }
-

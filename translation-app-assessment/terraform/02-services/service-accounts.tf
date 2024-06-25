@@ -5,7 +5,7 @@
  */
 
 resource "google_service_account" "token_broker_sa" {
-  account_id   = "pe-token-broker"
+  account_id   = "trad-token-broker"
   display_name = "Token Broker Service Account"
   project      = var.project_id
 }
@@ -61,5 +61,17 @@ resource "google_service_account" "translation_sa" {
 resource "google_service_account" "authentication_sa" {
   account_id   = "pe-authentication"
   display_name = "Authentication Service Account"
+  project      = var.project_id
+}
+
+resource "google_service_account" "detect_text_sa" {
+  account_id   = "pe-detect-text"
+  display_name = "Detect Text Service Account"
+  project      = var.project_id
+}
+
+resource "google_service_account" "pdf_to_image_sa" {
+  account_id   = "pe-pdf-to-image"
+  display_name = "Convert Pdf to Image Service Account"
   project      = var.project_id
 }

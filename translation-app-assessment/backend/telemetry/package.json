@@ -1,5 +1,5 @@
 {
-  "name": "pe-telemetry",
+  "name": "trad-telemetry",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,8 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "body-parser": "^1.19.0"
+    "dotenv": "^16.4.5",
+    "express": "^4.17.1",
+    "helmet": "^7.1.0"
   }
 }

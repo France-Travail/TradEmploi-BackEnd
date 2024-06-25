@@ -1,121 +1,150 @@
-/*
- * Copyright 2020 Google LLC. This software is provided as-is, without warranty
- * or representation for any use or purpose. Your use of it is subject to your
- * agreement with Google.
- */
+resource "google_cloud_run_v2_service" "token_broker" {
+  name     = "trad-token-broker"
+  location = var.region
+  project  = var.project_id
+  template {
+      service_account = google_service_account.token_broker_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/trad-token-broker:v1"
+        resources {
+          cpu_idle = var.token_broker_cpu_idle
+          startup_cpu_boost = var.token_broker_startup_cpu_boost
+        }
+      }
+      scaling {
+        min_instance_count = var.token_broker_min_instance_count
+        max_instance_count = var.token_broker_max_instance_count
+      }
+  }
+}
 
-resource "google_cloud_run_service" "token_broker" {
-  name     = "pe-token-broker"
+resource "google_cloud_run_v2_service" "reporting" {
+  name     = "trad-reporting"
+  location = var.region
+  project  = var.project_id
+  template {
+      service_account = google_service_account.reporting_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/trad-reporting:v1"
+        resources {
+          cpu_idle = var.reporting_cpu_idle
+          startup_cpu_boost = var.reporting_startup_cpu_boost
+        }
+      }
+      scaling {
+        min_instance_count = var.reporting_min_instance_count
+        max_instance_count = var.reporting_max_instance_count
+      }
+  }
+}
+
+resource "google_cloud_run_v2_service" "telemetry" {
+  name     = "trad-telemetry"
+  location = var.region
+  project  = var.project_id
+  template {
+      service_account = google_service_account.telemetry_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/trad-telemetry:v1"
+        resources {
+          cpu_idle = var.telemetry_cpu_idle
+          startup_cpu_boost = var.telemetry_startup_cpu_boost
+        }
+      }
+      scaling {
+        min_instance_count = var.telemetry_min_instance_count
+        max_instance_count = var.telemetry_max_instance_count
+      }
+  }
+}
+
+resource "google_cloud_run_v2_service" "cleanup" {
+  name     = "trad-cleanup"
+  location = var.region
+  project  = var.project_id
+  template {
+      service_account = google_service_account.cleanup_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/trad-cleanup:v1"
+        resources {
+          cpu_idle = var.cleanup_cpu_idle
+          startup_cpu_boost = var.cleanup_startup_cpu_boost
+        }
+      }
+      scaling {
+        min_instance_count = var.cleanup_min_instance_count
+        max_instance_count = var.cleanup_max_instance_count
+      }
+  }
+}
+
+resource "google_cloud_run_v2_service" "translation" {
+  name     = "trad-translation"
+  location = var.region
+  project  = var.project_id
+  template {
+      service_account = google_service_account.translation_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/trad-translation:v1"
+        resources {
+          cpu_idle = var.translation_cpu_idle
+          startup_cpu_boost = var.translation_startup_cpu_boost
+        }
+      }
+      scaling {
+        min_instance_count = var.translation_min_instance_count
+        max_instance_count = var.translation_max_instance_count
+      }
+  }
+}
+
+resource "google_cloud_run_v2_service" "authentication" {
+  name     = "trad-authentication"
+  location = var.region
+  project  = var.project_id
+  template {
+      service_account = google_service_account.authentication_sa.email
+      containers {
+        image = "eu.gcr.io/${var.project_id}/trad-authentication:v1"
+        resources {
+          cpu_idle = var.authentication_cpu_idle
+          startup_cpu_boost = var.authentication_startup_cpu_boost
+        }
+      }
+      scaling {
+        min_instance_count = var.authentication_min_instance_count
+        max_instance_count = var.authentication_max_instance_count
+      }
+  }
+}
+resource "google_cloud_run_service" "detect_text" {
+  name     = "pe-detect-text"
   location = var.region
   project  = var.project_id
 
   template {
     spec {
-      service_account_name = google_service_account.token_broker_sa.email
+      service_account_name = google_service_account.detect_text_sa.email
       containers {
-        image = "eu.gcr.io/${var.project_id}/pe-token-broker:v1"
+        image = "eu.gcr.io/${var.project_id}/pe-detect-text:v1"
         env {
           name  = "GCP_PROJECT"
           value = var.project_id
         }
-        env {
-          name  = "API_GATEWAY_AUDIENCE"
-          value = var.oidc_audience
-        }
       }
     }
   }
-
 }
-
-resource "google_cloud_run_service" "reporting" {
-  name     = "pe-reporting"
+resource "google_cloud_run_service" "pdf_to_image" {
+  name     = "pe-pdf-to-image"
   location = var.region
   project  = var.project_id
 
   template {
     spec {
-      service_account_name = google_service_account.reporting_sa.email
+      service_account_name = google_service_account.pdf_to_image_sa.email
       containers {
-        image = "eu.gcr.io/${var.project_id}/pe-reporting:v1"
-        env {
-          name  = "GCP_PROJECT"
-          value = var.project_id
-        }
-      }
-    }
-  }
-}
-
-resource "google_cloud_run_service" "telemetry" {
-  name     = "pe-telemetry"
-  location = var.region
-  project  = var.project_id
-
-  template {
-    spec {
-      service_account_name = google_service_account.telemetry_sa.email
-      containers {
-        image = "eu.gcr.io/${var.project_id}/pe-telemetry:v1"
-        env {
-          name  = "GCP_PROJECT"
-          value = var.project_id
-        }
-      }
-    }
-  }
-}
-
-resource "google_cloud_run_service" "cleanup" {
-  name     = "pe-cleanup"
-  location = var.region
-  project  = var.project_id
-
-  template {
-    spec {
-      service_account_name = google_service_account.cleanup_sa.email
-      containers {
-        image = "eu.gcr.io/${var.project_id}/pe-cleanup:v1"
-        env {
-          name  = "GCP_PROJECT"
-          value = var.project_id
-        }
-        env {
-          name  = "LOCATION"
-          value = var.region
-        }
-      }
-    }
-  }
-}
-resource "google_cloud_run_service" "translation" {
-  name     = "pe-translation"
-  location = var.region
-  project  = var.project_id
-
-  template {
-    spec {
-      service_account_name = google_service_account.translation_sa.email
-      containers {
-        image = "eu.gcr.io/${var.project_id}/pe-translation:v1"
-        env {
-          name  = "GCP_PROJECT"
-          value = var.project_id
-        }
-      }
-    }
-  }
-}
-resource "google_cloud_run_service" "authentication" {
-  name     = "pe-authentication"
-  location = var.region
-  project  = var.project_id
-
-  template {
-    spec {
-      service_account_name = google_service_account.authentication_sa.email
-      containers {
-        image = "eu.gcr.io/${var.project_id}/pe-authentication:v1"
+        image = "eu.gcr.io/${var.project_id}/pe-pdf-to-image:v1"
         env {
           name  = "GCP_PROJECT"
           value = var.project_id

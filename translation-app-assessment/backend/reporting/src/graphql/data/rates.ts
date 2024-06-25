@@ -70,6 +70,8 @@ const buildRate = (r: any) => {
     nbMessagesGuest: r.nbMessagesGuest ? r.nbMessagesGuest : 0,
     user: r.user ? r.user : "",
     agency: r.agency ? r.agency : "",
-    typeSTT: r.typeSTT ? r.typeSTT: ""
+    typeSTT: r.typeSTT ? r.typeSTT: "",
+    isTradTonDoc: r.isTradTonDoc ? r.isTradTonDoc: "",
+    nbTranslatedCharacters: r.nbTranslatedCharacters ? r.nbTranslatedCharacters : 0
   }
 }

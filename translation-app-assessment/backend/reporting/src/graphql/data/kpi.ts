@@ -201,7 +201,7 @@ export const launchCron = async () => {
             .ref("chats")
             .once("value")
             .then(async (snapshot: any) => {
-              const chats = snapshot?.val()
+              const chats = snapshot.val()
               await createkpis(chats)
             })
         await admin.database().ref("chats").remove()

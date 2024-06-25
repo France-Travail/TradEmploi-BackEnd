@@ -12,13 +12,25 @@ const Monitoring = require('@google-cloud/monitoring')
 // Init express.js app
 const app = express()
 app.use(bodyParser.json())
-app.disable('x-powered-by')
+const cookieParser = require('cookie-parser')
+app.use(cookieParser())
 
+app.disable('x-powered-by')
+require("dotenv");
+const cors = require('cors');
+
+const corsOptions = {
+    origin: process.env.FRONTEND_URL,
+    credentials: true,  // Permet les requêtes incluant les cookies
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
+    methods: ['GET'],
+};
+
+app.use(cors(corsOptions));
 // Init project and services
 const projectId = process.env.GCP_PROJECT
 firebaseAdmin.initializeApp()
 const firestore = firebaseAdmin.firestore()
-
 // Function to write monitoring "heartbeat" that cleanup has run
 const writeMonitoring = async () => {
     const monitoringOptions = {
@@ -47,7 +59,7 @@ const writeMonitoring = async () => {
                 project_id: projectId,
                 task_id: 'cleanup',
                 location: process.env.LOCATION || 'global',
-                namespace: 'pole-emploi',
+                namespace: 'traduction',
                 job: 'cleanup'
             }
         },
@@ -64,39 +76,62 @@ app.get('/', async (req, res) => {
     console.log("hello");
 })
 
-app.post('/', async (req, res) => {
-    await kpi()
-    // Delete chat that have been expired for an hour or longer
-    const deletionPromises = []
-    const collection = firestore.collection('chats')
-    const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
-    const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
-    for (const docSnapshot of querySnapshot.docs) {
-        deletionPromises.push(collection.doc(docSnapshot.id).delete())
-    }
-    await Promise.all(deletionPromises)
-    await cleanRates();
-    await writeMonitoring()
-    console.log(`deleted chats, size:${querySnapshot.size}`)
+// Middleware to verify CSRF token
+const verifyCsrfToken = (req, res, next) => {
+    const csrfTokenFromClient = req.headers['x-csrf-token'];
+    const csrfTokenFromSession = req.cookies.csrfToken;
 
-    await createLanguagesFromRates();
-    res.status(204).send()
+    if (csrfTokenFromClient && csrfTokenFromClient === csrfTokenFromSession) {
+        return next();
+    }
+
+    res.status(403).send('Invalid CSRF token');
+};
+
+
+app.post('/', async (req, res, next) => {
+    try {
+        await kpi()
+        // Delete chat that have been expired for an hour or longer
+        const deletionPromises = []
+        const collection = firestore.collection('chats')
+        const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
+        const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
+        for (const docSnapshot of querySnapshot.docs) {
+            deletionPromises.push(collection.doc(docSnapshot.id).delete())
+        }
+        await Promise.all(deletionPromises)
+        if(process.env.ID_BOT !== undefined) await cleanRatesFromBot();
+        await writeMonitoring()
+        console.log(`deleted chats, size:${querySnapshot.size}`)
+
+        await createLanguagesFromRates();
+        res.status(204).send()
+    } catch(e) {
+        next(e)
+    }
 })
 
-const port = process.env.PORT || 8080
+app.use(function (err, req, res, /*unused*/ next) {
+    console.error(err)
+    res.status(500)
+    res.send({ error: err })
+})
+
+const port = process.env.PORT || 8083
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
 
-async function cleanRates() {
-    // Delete rates created by the end to end tests robot SD34N140
+async function cleanRatesFromBot() {
+    // Delete rates created by the end to end tests robot process.env.ID_BOT
     const deletionPromises = []
     const collection = firestore.collection('rates')
-    const querySnapshot = await collection.where('user', '=', 'SD34N140').get()
+    const querySnapshot = await collection.where('user', '=', `${process.env.ID_BOT}`).get()
     for (const docSnapshot of querySnapshot.docs) {
         deletionPromises.push(collection.doc(docSnapshot.id).delete())
     }
-    console.log(`rates deleted, size:${deletionPromises.length},user: SD34N140`);
+    console.log(`rates deleted, size:${deletionPromises.length},user: ${process.env.ID_BOT}`);
     await Promise.all(deletionPromises)
 }
 
@@ -305,11 +340,11 @@ async function createLanguagesFromRates() {
                 const data = doc.data();
                 const language = data.language + '';
                 const user = data.user + '';
-                const excludedUsers = ['SD34N140'];
+                const excludedUsers = [process.env.ID_BOT];
                 if (language && !excludedUsers.includes(user)) {
                     languagesSelected = languagesSelected.concat(language.split(','));
                     if (data.grades && data.grades.length > 0) {
-                        const grade = data.grades[1];
+                        const grade = data.grades[0];
                         const existingItem = langaugesAverageRate.get(language);
                         if (existingItem) {
                             langaugesAverageRate.set(language, existingItem + grade);

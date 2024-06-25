@@ -10,7 +10,7 @@ const app: Express = express()
 const port = 8080
 
 const corsOptions = {
-  origin: [/https:\/\/[a-z0-9\-.]*pole-emploi[a-z0-9\-.]+/],
+  origin: [/https:\/\/[a-z0-9\-.]*trad-open[a-z0-9\-.]+/],
   methods: ['GET', 'POST'],
   maxAge: 3600
 }

@@ -7,14 +7,14 @@
 resource "google_api_gateway_api" "api" {
   provider = google-beta
   project  = var.project_id
-  api_id   = "pe-api"
+  api_id   = "trad-api"
 }
 
 resource "google_api_gateway_api_config" "api_cfg" {
   provider = google-beta
   project  = var.project_id
   api = google_api_gateway_api.api.api_id
-  api_config_id = "pe-api-config-${random_id.cfg_suffix.hex}"
+  api_config_id = "trad-api-config-${random_id.cfg_suffix.hex}"
   gateway_config {
     backend_config {
       google_service_account = google_service_account.api_gateway_sa.email
@@ -36,7 +36,7 @@ resource "google_api_gateway_gateway" "api_gw" {
   provider   = google-beta
   project    = var.project_id
   api_config = google_api_gateway_api_config.api_cfg.id
-  gateway_id = "pe-api-gw"
+  gateway_id = "trad-api-gw"
   region     = var.region
   timeouts {
     create = "15m" # default 6m seems too short
@@ -51,6 +51,7 @@ data "template_file" "openapi" {
     reporting_url    = google_cloud_run_service.reporting.status[0].url
     translation_url    = google_cloud_run_service.translation.status[0].url
     authentication_url = google_cloud_run_service.authentication.status[0].url
+    detect_text_url = google_cloud_run_service.detect_text.status[0].url
     admin_sa_email   = google_service_account.client_admin_sa.email
     guest_sa_email   = google_service_account.client_guest_sa.email
     oidc_audience    = var.oidc_audience
