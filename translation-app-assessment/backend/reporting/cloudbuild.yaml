@@ -36,7 +36,7 @@ options:
 substitutions:
   _LABELS: scope=poc
   _GCR_HOSTNAME: eu.gcr.io
-  _SERVICE_NAME: pe-reporting
+  _SERVICE_NAME: trad-reporting
   _DEPLOY_REGION: europe-west1
   _IMAGE_TAG: v1
   _PORT: '8080'

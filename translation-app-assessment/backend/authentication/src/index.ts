@@ -1,13 +1,13 @@
-import express, { Express, Request, Response } from "express"
-import { AccessTokenResponse } from "./models/accessTokenResponse"
-import { CallBackResponse } from "./models/callBackResponse"
-import { getAccessToken } from "./utils/getAccessToken"
-import { getTokenInfo, isTokenValid } from "./utils/getTokenInfo"
-import { getUserInfo } from "./utils/getUserInfo"
-require("dotenv").config()
-const cors = require('cors')
-const app: Express = express()
-const port = 8080
+import express, { Express, Request, Response } from "express";
+import { AccessTokenResponse } from "./models/accessTokenResponse";
+import { CallBackResponse } from "./models/callBackResponse";
+import { getAccessToken } from "./utils/getAccessToken";
+import { getTokenInfo, isTokenValid } from "./utils/getTokenInfo";
+import { getUserInfo } from "./utils/getUserInfo";
+require("dotenv").config();
+const cors = require('cors');
+const app: Express = express();
+const port = 8080;
 
 const corsOptions = {
   origin: [/https:\/\/[a-z0-9\-.]*trad-open[a-z0-9\-.]+/],

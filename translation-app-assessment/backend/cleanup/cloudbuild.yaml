@@ -33,6 +33,7 @@ steps:
       - >-
         --labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$_IMAGE_TAG,gcb-build-id=$BUILD_ID,$_LABELS
       - '--quiet'
+      - --env-vars-file=cb_env_var_file.yaml
     id: Deploy
     entrypoint: gcloud
 images:
@@ -42,7 +43,7 @@ options:
 substitutions:
   _LABELS: scope=poc
   _GCR_HOSTNAME: eu.gcr.io
-  _SERVICE_NAME: pe-cleanup
+  _SERVICE_NAME: trad-cleanup
   _DEPLOY_REGION: europe-west1
   _IMAGE_TAG: v1
   _PORT: '8080'
