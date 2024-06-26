@@ -10,9 +10,11 @@ app.disable("x-powered-by")
 app.use(bodyParser.json({ limit: "10mb" }))
 
 const corsOptions = {
-  methods: ["POST"],
-  maxAge: 3600,
-}
+  origin: process.env.FRONTEND_URL,
+  credentials: true,  // Permet les requêtes incluant les cookies
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
+  methods: ['POST'],
+};
 
 app.use(cors(corsOptions))
 
