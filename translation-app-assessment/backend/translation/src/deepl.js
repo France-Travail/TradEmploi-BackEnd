@@ -14,7 +14,7 @@ const translateWithDeepl = (text, targetLang, sourceLang, type) => {
     type = type === 'plaintext' ? '' : type;
 
     const data = {
-        'text': text,
+        'text': [text],
         'tag_handling': type,
         'source_lang': sourceLang,
         'target_lang': targetLang,
