@@ -1,13 +1,13 @@
 image: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
 before_script:
-  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE
-  - gcloud config set project $GCP_PROJECT
+  - gcloud auth activate-service-account --key-file $GCLOUD_SERVICE_KEY_FILE_OPEN_SOURCE
+  - gcloud config set project $GCP_PROJECT_OPEN_SOURCE
 stages:
   - deploy
 deploy-job:
   stage: deploy
   environment:
-    name: staging
+    name: open-source
   script:
     - cd /builds/petranslate/TradEmploi-backend/translation-app-assessment/backend/translation
     - gcloud builds submit .
