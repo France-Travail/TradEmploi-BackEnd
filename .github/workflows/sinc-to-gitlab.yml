@@ -1,0 +1,27 @@
+name: Sync to Private Repo
+
+on:
+  push:
+    branches:
+      - master  # Change this to the branch you want to monitor
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Clone the target repository
+        run: |
+          git clone https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/petranslate/TradEmploi-backend.git
+          cd TradEmploi-backend
+          git remote add source https://github.com/France-Travail/TradEmploi-BackEnd.git
+          git fetch source
+          git merge source/master
+          git push origin master
+        env:
+          token: ${{ secrets.GITLAB_TOKEN }}
