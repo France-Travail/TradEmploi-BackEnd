@@ -1,4 +1,4 @@
-**Trad**: an instantaneous translation application between two people, one of whom is allophone
+**Trad**: an instantaneous translation application between two people, one of whom is allophone.
 
 Copyright (C) <2022>  <Innovation Department, DSI Pôle Emploi>
 
