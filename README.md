@@ -125,3 +125,55 @@ Token Service API)
 If you use application with Firebase authentication (and not with OIDC mechanism), create user in firebase; this user will be used to access to the application.
 ![img.png](images/img5.png)
 ![img.png](images/img6.png)
+
+
+## Create a feature branch
+
+To create a feature branch and automatically push it to our related gitlab repository, please follow the following steps :
+
+1 - Create the feature branch from master. Change feature_branch with the name of the branch you want to create
+```
+$ git pull
+
+$ git checkout -b feature_branch master
+```
+
+2 - Make your devs and test them locally
+
+3 - Update sinc-to-gitlab.yml file. Remove all feature_test occurrences and replace them with your branch name
+```
+name: Sync to Private Repo
+
+on:
+  push:
+    branches:
+      - feature_test  # Change this to the branch you want to monitor
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Clone the target repository
+        run: |
+          git clone https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/petranslate/Trademploi-backend.git
+          cd Trademploi-backend
+          git remote add source https://github.com/France-Travail/TradEmploi-BackEnd.git
+          git fetch source
+          git checkout -b feature_test source/feature_test
+          git push origin feature_test
+        env:
+          token: ${{ secrets.GITLAB_TOKEN }}
+
+
+```
+4 - Commit and push your changes (all your files + sinc-to-gitlab.yml) on your new branch.
+
+5 - Verify in the github actions that you workflow succeed
+
+6 - Create a Merge Request to merge your changes in master, after the validation of the development team 
