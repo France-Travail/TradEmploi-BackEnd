@@ -126,6 +126,11 @@ If you use application with Firebase authentication (and not with OIDC mechanism
 ![img.png](images/img5.png)
 ![img.png](images/img6.png)
 
+## Contribute to this project
+
+For active contributors who want to use this repository as their main one, we have an active push functionality on our [internal repository](https://gitlab.com/petranslate/TradEmploi-backend) which contains our CI/CD to directly deploy the application on our [open-source domain](https://pole-emploi-trad-open.firebaseapp.com/).
+
+If you want to participate, please follow the next steps. For security, pushing on master is disallowed.
 
 ## Create a feature branch
 
