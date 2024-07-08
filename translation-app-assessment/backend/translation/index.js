@@ -69,7 +69,7 @@ async function translateText(
   targetLanguageCode,
   sourceLanguageCode
 ) {
-  console.log("Use Google cloud translation from ", sourceLang, " to ", targetLang)
+  console.log("Use Google cloud translation from ", sourceLanguageCode, " to ", targetLanguageCode)
   const request = {
     parent: `projects/${projectId}/locations/${location}`,
     contents: [text],
