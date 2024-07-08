@@ -30,7 +30,7 @@ app.post("/", async (req, res) => {
   const targetLanguageSplitted = req.body.targetLanguageCode
     .split("-")[0]
     .toUpperCase()
-  const useDeepl = process.env.DEEPL_API_KEY 
+  const useDeepl = process.env.DEEPL_API_KEY
 
   const translatedText =
     deeplLanguages.includes(targetLanguageSplitted) &&
@@ -69,7 +69,7 @@ async function translateText(
   targetLanguageCode,
   sourceLanguageCode
 ) {
-  console.log("Use google cloud translation")
+  console.log("Use Google cloud translation from ", sourceLang, " to ", targetLang)
   const request = {
     parent: `projects/${projectId}/locations/${location}`,
     contents: [text],
