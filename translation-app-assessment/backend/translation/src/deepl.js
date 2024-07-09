@@ -31,7 +31,7 @@ const translateWithDeepl = (text, targetLang, sourceLang, type) => {
         response.data.translations.forEach(translation => {
             texts.push(translation.text)
         })
-        return texts
+        return texts.toString();
     })
     .catch((error) => {
       console.error(error)
