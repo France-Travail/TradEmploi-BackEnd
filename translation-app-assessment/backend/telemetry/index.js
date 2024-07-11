@@ -24,19 +24,6 @@ app.use(bodyParser.json())
 app.use(cookieParser())
 app.use(helmet())
 
-// Middleware to verify CSRF token
-const verifyCsrfToken = (req, res, next) => {
-  const csrfTokenFromClient = req.headers['x-csrf-token'];
-  const csrfTokenFromSession = req.cookies.csrfToken;
-
-  if (csrfTokenFromClient && csrfTokenFromClient === csrfTokenFromSession) {
-    return next();
-  }
-
-  res.status(403).send('Invalid CSRF token');
-};
-
-
 app.get('/', async (req, res, next) => {
   try {
     var idDGASI = req.query.idDGASI;

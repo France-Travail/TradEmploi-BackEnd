@@ -76,19 +76,6 @@ app.get('/', async (req, res) => {
     console.log("hello");
 })
 
-// Middleware to verify CSRF token
-const verifyCsrfToken = (req, res, next) => {
-    const csrfTokenFromClient = req.headers['x-csrf-token'];
-    const csrfTokenFromSession = req.cookies.csrfToken;
-
-    if (csrfTokenFromClient && csrfTokenFromClient === csrfTokenFromSession) {
-        return next();
-    }
-
-    res.status(403).send('Invalid CSRF token');
-};
-
-
 app.post('/', async (req, res, next) => {
     try {
         await kpi()

@@ -136,9 +136,6 @@ app.post('/', async (req, res, next) => {
     const tokenPayload = req.headers['x-forwarded-authorization'] || req.headers.authorization
     const firebaseToken = tokenPayload ? tokenPayload.split('Bearer ')[1] : null
 
-    // Générez le token CSRF JWT
-    // const csrfToken = jwt.sign({ csrf: true }, process.env.CSRF_SECRET_KEY, { expiresIn: '1h' });
-
     if (!firebaseToken) {
       res.status(401).send('Authentication required')
       return
@@ -196,11 +193,6 @@ app.post('/', async (req, res, next) => {
       },
       apiGateway: apiGatewayToken,
     }
-/*    res.cookie('csrfToken', csrfToken, {
-      httpOnly: false,
-      secure: true,
-      sameSite: 'None'
-    })*/
     res.send(response)
   } catch (e) {
     next(e)
