@@ -1,8 +1,8 @@
 const axios = require("axios")
 
 require("dotenv").config()
-const translateWithDeepl = (text, targetLang, sourceLang, type) => {
-    console.log("Use Deepl cloud translation from ", sourceLang, " to ", targetLang)
+const translateWithDeepl = (text, targetLang, sourceLang, type, currentUserDomain, isTradTonDoc) => {
+    console.log(`Use DeepL cloud translation from ${sourceLang} to ${targetLang} by ${currentUserDomain} for ${isTradTonDoc ? 'TradTonDoc' : 'Chat'}`)
     let glossaryParameter = getGlossaryParameter(sourceLang, targetLang);
     const config = {
         headers: {
