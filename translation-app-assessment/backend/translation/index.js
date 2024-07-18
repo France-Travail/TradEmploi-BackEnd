@@ -31,6 +31,8 @@ app.post("/", async (req, res) => {
     .split("-")[0]
     .toUpperCase()
   const useDeepl = process.env.DEEPL_API_KEY
+  const currentUserDomain = req.body.currentUserDomain
+  const isTradTonDoc = req.body.isTradTonDoc
 
   const translatedText =
     deeplLanguages.includes(targetLanguageSplitted) &&
@@ -39,13 +41,17 @@ app.post("/", async (req, res) => {
       ? await translateWithDeepl(
           req.body.text,
           targetLanguageSplitted,
-          sourceLanguageSplitted
+          sourceLanguageSplitted,
+          currentUserDomain,
+          isTradTonDoc
         )
       : await translateText(
           req.body.projectId,
           req.body.text,
           req.body.targetLanguageCode,
-          req.body.sourceLanguageCode
+          req.body.sourceLanguageCode,
+          currentUserDomain,
+          isTradTonDoc
         )
 
   const response = {
@@ -67,9 +73,11 @@ async function translateText(
   projectId,
   text,
   targetLanguageCode,
-  sourceLanguageCode
+  sourceLanguageCode,
+  currentUserDomain,
+  isTradTonDoc
 ) {
-  console.log("Use Google cloud translation from ", sourceLanguageCode, " to ", targetLanguageCode)
+  console.log(`Use Google cloud translation from ${sourceLanguageCode} to ${targetLanguageCode} by ${currentUserDomain} for ${isTradTonDoc ? 'TradTonDoc' : 'Chat'}`)
   const request = {
     parent: `projects/${projectId}/locations/${location}`,
     contents: [text],
