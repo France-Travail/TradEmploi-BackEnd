@@ -18,6 +18,9 @@ app.use(cookieParser())
 app.disable('x-powered-by')
 require("dotenv");
 const cors = require('cors');
+firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.applicationDefault()
+});
 
 const corsOptions = {
     origin: process.env.FRONTEND_URL,
@@ -363,7 +366,9 @@ async function createLanguage(isoCode, occurrences, average) {
 }
 
 async function deleteInactiveUsers() {
+
     const auth = firebaseAdmin.auth();
+
     const oneYearAgo = Date.now() - 365 * 24 * 60 * 60 * 1000;
     try {
         let usersDeleted = 0;
