@@ -23,7 +23,7 @@ const corsOptions = {
     origin: process.env.FRONTEND_URL,
     credentials: true,  // Permet les requêtes incluant les cookies
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
-    methods: ['GET'],
+    methods: ['GET', 'POST'],
 };
 
 app.use(cors(corsOptions));
@@ -93,6 +93,7 @@ app.post('/', async (req, res, next) => {
         console.log(`deleted chats, size:${querySnapshot.size}`)
 
         await createLanguagesFromRates();
+        await deleteInactiveUsers();
         res.status(204).send()
     } catch(e) {
         next(e)
@@ -359,5 +360,41 @@ async function createLanguage(isoCode, occurrences, average) {
         average: (average && occurrences) ? (average / occurrences) : ''
     }
     await firestore.collection("languages").doc(isoCode).set(data)
+}
+
+async function deleteInactiveUsers() {
+    const auth = firebaseAdmin.auth();
+    const oneYearAgo = Date.now() - 365 * 24 * 60 * 60 * 1000;
+    try {
+        let usersDeleted = 0;
+        let nextPageToken;
+
+        do {
+            const result = await auth.listUsers(1000, nextPageToken);
+            const inactiveUsers = result.users.filter(user => {
+                const lastSignInTime = user.metadata.lastSignInTime;
+                return lastSignInTime && new Date(lastSignInTime).getTime() < oneYearAgo;
+            });
+
+            const deletionPromises = inactiveUsers.map(user => {
+                return auth.deleteUser(user.uid)
+                  .then(() => {
+                      console.log(`Successfully deleted user: ${user.uid}`);
+                      usersDeleted++;
+                  })
+                  .catch(error => {
+                      console.error(`Error deleting user ${user.uid}:`, error);
+                  });
+            });
+
+            await Promise.all(deletionPromises);
+
+            nextPageToken = result.pageToken;
+        } while (nextPageToken);
+
+        console.log(`Deleted ${usersDeleted} inactive users.`);
+    } catch (error) {
+        console.error('Error listing users:', error);
+    }
 }
 
