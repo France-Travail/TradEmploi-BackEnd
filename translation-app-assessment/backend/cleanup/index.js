@@ -9,7 +9,7 @@ const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
 const fs = require('fs');
 
-const firebaseConfig = JSON.parse(fs.readFileSync('/etc/secrets/firebase-config.json', 'utf8'));
+const firebaseConfig = JSON.parse(fs.readFileSync('/secrets/firebase-config.json', 'utf8'));
 const Monitoring = require('@google-cloud/monitoring')
 
 // Init express.js app
