@@ -7,6 +7,9 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
+const fs = require('fs');
+
+const firebaseConfig = JSON.parse(fs.readFileSync('/etc/secrets/firebase-config.json', 'utf8'));
 const Monitoring = require('@google-cloud/monitoring')
 
 // Init express.js app
@@ -30,7 +33,7 @@ app.use(cors(corsOptions));
 // Init project and services
 const projectId = process.env.GCP_PROJECT
 firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.applicationDefault()
+    credential: firebaseAdmin.credential.cert(firebaseConfig)
 });
 const firestore = firebaseAdmin.firestore()
 // Function to write monitoring "heartbeat" that cleanup has run
