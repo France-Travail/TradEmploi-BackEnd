@@ -83,23 +83,23 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res, next) => {
     try {
-        // await kpi()
-        // // Delete chat that have been expired for an hour or longer
-        // const deletionPromises = []
-        // const collection = firestore.collection('chats')
-        // const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
-        // const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
-        // for (const docSnapshot of querySnapshot.docs) {
-        //     deletionPromises.push(collection.doc(docSnapshot.id).delete())
-        // }
-        // await Promise.all(deletionPromises)
-        // if(process.env.ID_BOT !== undefined) await cleanRatesFromBot();
-        // await writeMonitoring()
-        // console.log(`deleted chats, size:${querySnapshot.size}`)
-        //
-        // await createLanguagesFromRates();
+        await kpi()
+        // Delete chat that have been expired for an hour or longer
+        const deletionPromises = []
+        const collection = firestore.collection('chats')
+        const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
+        const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
+        for (const docSnapshot of querySnapshot.docs) {
+            deletionPromises.push(collection.doc(docSnapshot.id).delete())
+        }
+        await Promise.all(deletionPromises)
+        if(process.env.ID_BOT !== undefined) await cleanRatesFromBot();
+        await writeMonitoring()
+        console.log(`deleted chats, size:${querySnapshot.size}`)
+
+        await createLanguagesFromRates();
         await deleteInactiveUsers();
-        // res.status(204).send()
+        res.status(204).send()
     } catch(e) {
         next(e)
     }
