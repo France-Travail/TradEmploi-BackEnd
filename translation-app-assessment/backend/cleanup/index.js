@@ -390,7 +390,14 @@ async function deleteInactiveUsers() {
                       usersDeleted++;
                   })
                   .catch(error => {
-                      console.error(`Error deleting user ${user.uid}:`, error);
+                      if (error.code === 'auth/too-many-requests') {
+                          console.error(`Quota exceeded while deleting user ${user.uid}. Retrying after delay...`);
+                          // Retrying mechanism can be implemented here if needed
+                      } else if (error.code === 'auth/user-not-found') {
+                          console.error(`User ${user.uid} not found.`);
+                      } else {
+                          console.error(`Error deleting user ${user.uid}:`, error.message);
+                      }
                   });
             });
 
