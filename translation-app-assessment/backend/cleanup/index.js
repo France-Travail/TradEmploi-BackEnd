@@ -10,7 +10,6 @@ const firebaseAdmin = require('firebase-admin')
 const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 const secretManagerServiceClient = new SecretManagerServiceClient();
 const Monitoring = require('@google-cloud/monitoring')
-const firestore = firebaseAdmin.firestore()
 // Init express.js app
 const app = express()
 app.use(bodyParser.json())
@@ -34,7 +33,7 @@ const projectId = process.env.GCP_PROJECT
 
 // Call initializeFirebase during startup
 initializeFirebase();
-
+const firestore = firebaseAdmin.firestore()
 
 // Function to write monitoring "heartbeat" that cleanup has run
 const writeMonitoring = async () => {
