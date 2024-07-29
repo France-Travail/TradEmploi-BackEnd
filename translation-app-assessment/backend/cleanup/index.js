@@ -33,7 +33,6 @@ const projectId = process.env.GCP_PROJECT
 
 // Call initializeFirebase during startup
 initializeFirebase();
-const firestore = firebaseAdmin.firestore()
 
 // Function to write monitoring "heartbeat" that cleanup has run
 const writeMonitoring = async () => {
@@ -83,6 +82,7 @@ app.get('/', async (req, res) => {
 app.post('/', async (req, res, next) => {
     try {
 
+        const firestore = firebaseAdmin.firestore()
 
         await kpi()
         // Delete chat that have been expired for an hour or longer
