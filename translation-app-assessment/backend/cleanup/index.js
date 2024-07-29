@@ -18,12 +18,12 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
 app.disable('x-powered-by')
-require('dotenv').config({ path: require('find-config')('.env') })
+require('dotenv');
 const cors = require('cors');
 
 const corsOptions = {
     origin: process.env.FRONTEND_URL,
-    credentials: true,  // Permet les requêtes incluant les cookiesn
+    credentials: true,  // Permet les requêtes incluant les cookies
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
     methods: ['GET', 'POST'],
 };
