@@ -7,9 +7,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
-const fs = require('fs');
-
-const firebaseConfig = JSON.parse(fs.readFileSync('/secrets/firebase-config.json', 'utf8'));
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+const secretManagerServiceClient = new SecretManagerServiceClient();
 const Monitoring = require('@google-cloud/monitoring')
 
 // Init express.js app
@@ -19,12 +18,12 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
 app.disable('x-powered-by')
-require("dotenv");
+require('dotenv').config({ path: require('find-config')('.env') })
 const cors = require('cors');
 
 const corsOptions = {
     origin: process.env.FRONTEND_URL,
-    credentials: true,  // Permet les requêtes incluant les cookies
+    credentials: true,  // Permet les requêtes incluant les cookiesn
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
     methods: ['GET', 'POST'],
 };
@@ -32,10 +31,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 // Init project and services
 const projectId = process.env.GCP_PROJECT
-firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.cert(firebaseConfig)
-});
-const firestore = firebaseAdmin.firestore()
+
+// Call initializeFirebase during startup
+initializeFirebase();
+
+
 // Function to write monitoring "heartbeat" that cleanup has run
 const writeMonitoring = async () => {
     const monitoringOptions = {
@@ -83,6 +83,8 @@ app.get('/', async (req, res) => {
 
 app.post('/', async (req, res, next) => {
     try {
+
+
         await kpi()
         // Delete chat that have been expired for an hour or longer
         const deletionPromises = []
@@ -412,3 +414,23 @@ async function deleteInactiveUsers() {
     }
 }
 
+// Function to initialize Firebase
+async function initializeFirebase() {
+    try {
+        const [version] = await secretManagerServiceClient.accessSecretVersion({
+            name: `projects/${projectId}/secrets/firebase-config/versions/latest`,
+        });
+
+        // Extract the secret payload as a string
+        const payload = version.payload.data.toString('utf8');
+
+        // Initialize Firebase Admin SDK
+        firebaseAdmin.initializeApp({
+            credential: firebaseAdmin.credential.cert(JSON.parse(payload)),
+        });
+
+        console.log('Firebase Admin initialized successfully');
+    } catch (error) {
+        console.error('Error initializing Firebase Admin:', error);
+    }
+}
