@@ -82,12 +82,10 @@ app.get('/', async (req, res) => {
 app.post('/', async (req, res, next) => {
     try {
 
-        const firestore = firebaseAdmin.firestore()
-
         await kpi()
         // Delete chat that have been expired for an hour or longer
         const deletionPromises = []
-        const collection = firestore.collection('chats')
+        const collection = firebaseAdmin.firestore().collection('chats')
         const deletionTimeThreshold = parseInt(Moment().subtract(1, 'hour').format('x'))
         const querySnapshot = await collection.where('expiryDate', '<', deletionTimeThreshold).get()
         for (const docSnapshot of querySnapshot.docs) {
@@ -120,7 +118,7 @@ app.listen(port, () => {
 async function cleanRatesFromBot() {
     // Delete rates created by the end to end tests robot process.env.ID_BOT
     const deletionPromises = []
-    const collection = firestore.collection('rates')
+    const collection = firebaseAdmin.firestore().collection('rates')
     const querySnapshot = await collection.where('user', '=', `${process.env.ID_BOT}`).get()
     for (const docSnapshot of querySnapshot.docs) {
         deletionPromises.push(collection.doc(docSnapshot.id).delete())
@@ -130,7 +128,7 @@ async function cleanRatesFromBot() {
 }
 
 async function kpi() {
-    const roomsReference = await firestore.collection('chats')
+    const roomsReference = await firebaseAdmin.firestore().collection('chats')
     await roomsReference.get()
         .then((querySnapshot) => {
             createKpis(querySnapshot)
@@ -175,7 +173,7 @@ const getMessagesData = (elements) => {
 }
 
 const kpiOnDb = async (data, roomId) => {
-    const roomsReference = await firestore.collection('kpis').doc(roomId)
+    const roomsReference = await firebaseAdmin.firestore().collection('kpis').doc(roomId)
     return roomsReference.set(data)
 }
 
@@ -329,7 +327,7 @@ async function createLanguagesFromRates() {
 
     let languagesSelected = [];
     const langaugesAverageRate = new Map();
-    await firestore.collection("rates").get().then((res) => {
+    await firebaseAdmin.firestore().collection("rates").get().then((res) => {
             res.forEach((doc) => {
                 const data = doc.data();
                 const language = data.language + '';
@@ -365,7 +363,7 @@ async function createLanguage(isoCode, occurrences, average) {
         occurrences: occurrences,
         average: (average && occurrences) ? (average / occurrences) : ''
     }
-    await firestore.collection("languages").doc(isoCode).set(data)
+    await firebaseAdmin.firestore().collection("languages").doc(isoCode).set(data)
 }
 
 async function deleteInactiveUsers() {
