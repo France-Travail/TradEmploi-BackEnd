@@ -144,26 +144,6 @@ To facilitate this, you need to set up a JSON secret file containing the Firebas
 2. Save this JSON file securely on GCP secrets with the following name : **firebase-config**
 3. Configure roles so that your secret file is accessible by your microservice
 
-
-### Cleanup microservice
-
-#### Purpose
-
-The cleanup microservice is, among other things, responsible for deleting users who have not connected to the application for more than a year. This is achieved by connecting to Firebase and accessing user data to perform cleanup operations.
-
-#### New Method
-
-To facilitate this, you need to set up a JSON secret file containing the Firebase credentials.
-
-#### Steps
-
-1. Obtain the Firebase service account key JSON file from your Firebase project settings.
-2. Save this JSON file securely on GCP secrets with the following name : **firebase-config**
-3. Configure roles so that your secret file is accessible by your microservice
-
-
-
-
 ## Contribute to this project
 
 For active contributors who want to use this repository as their main one, we have an active push functionality on our [internal repository](https://gitlab.com/petranslate/TradEmploi-backend) which contains our CI/CD to directly deploy the application on our [open-source domain](https://pole-emploi-trad-open.firebaseapp.com/).
