@@ -9,7 +9,8 @@ const Moment = require('moment')
 const firebaseAdmin = require('firebase-admin')
 const {IAMCredentialsClient} = require('@google-cloud/iam-credentials')
 const helmet = require('helmet')
-const sha1 = require('sha1')
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+const secretManagerServiceClient = new SecretManagerServiceClient();
 require('dotenv');
 
 // Init express.js app
@@ -32,8 +33,7 @@ app.use(cors(corsOptions));
 
 // Init project and services
 const projectId = process.env.GCP_PROJECT
-firebaseAdmin.initializeApp();
-const firestore = firebaseAdmin.firestore()
+initializeFirebase().then();
 
 // Init IAM creadentials client
 const client = new IAMCredentialsClient()
@@ -130,6 +130,9 @@ async function getExpiryFromRoom(roomId, userId) {
 
 app.post('/', async (req, res, next) => {
   try {
+
+    const firestore = firebaseAdmin.firestore();
+
     // First, verify the Firebase token.
     // Authorization token will come as x-forwarded-authorization if invoking
     // behind API Gateway, so take that case into account.
@@ -150,11 +153,18 @@ app.post('/', async (req, res, next) => {
       return
     }
 
+    // Check email domain
+    const authorized = await checkEmail(firebaseVerification.email);
+    if (!authorized) {
+      console.log('The domain ' + firebaseVerification.email.split('@')[1] + ' is not allowed to connect to this application. Please connect with an available domain');
+      return res.status(403).send('Authentication failed. The domain ' + firebaseVerification.email.split('@')[1] + ' is not allowed to connect to this application. Please connect with an available domain');
+    }
+
     // Next determine if this is an admin user or a guest
     const userId = firebaseVerification.sub
     const authProvider = firebaseVerification.firebase.sign_in_provider === 'anonymous' ? 'anonymous' : 'authenticated'
     const targetServiceAccount = serviceAccounts[authProvider]
-    console.log('logged in user:', sha1(userId), 'auth provider:', authProvider)
+    console.log('logged in user:', firebaseVerification.email, 'auth provider:', authProvider)
 
     // If this user is anonymous we also need to check the chat room and get or set the expiry date
     let expiryDate
@@ -164,11 +174,11 @@ app.post('/', async (req, res, next) => {
         return
       }
       if (req.body.firstname) {
-        await addGuest(req.body.roomId, userId, req.body.firstname)
+        await addGuest(req.body.roomId, userId, req.body.firstname, firestore)
         res.send(200, "GuestId added")
         return
       } else {
-        expiryDate = await getExpiryFromRoom(req.body.roomId, userId)
+        expiryDate = await getExpiryFromRoom(req.body.roomId, userId, firestore)
       }
     } else {
       // admin expiry defaults to 1 hour from current time
@@ -217,3 +227,24 @@ const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })
+
+// Function to initialize Firebase
+async function initializeFirebase() {
+  try {
+    const [version] = await secretManagerServiceClient.accessSecretVersion({
+      name: `projects/${projectId}/secrets/firebase-config/versions/latest`,
+    });
+
+    // Extract the secret payload as a string
+    const payload = version.payload.data.toString('utf8');
+
+    // Initialize Firebase Admin SDK
+    firebaseAdmin.initializeApp({
+      credential: firebaseAdmin.credential.cert(JSON.parse(payload)),
+    });
+
+    console.log('Firebase Admin initialized successfully');
+  } catch (error) {
+    console.error('Error initializing Firebase Admin:', error);
+  }
+}

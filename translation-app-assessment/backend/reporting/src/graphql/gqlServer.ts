@@ -5,7 +5,7 @@ import {ApolloServer} from 'apollo-server-express';
 
 function gqlServer() {
   const app = express();
-  const port: number = process.env.PORT ? +process.env.PORT : 8080;
+  const port: number = 8081;
 
   const apolloServer = new ApolloServer({
     context: async () => {
@@ -17,7 +17,7 @@ function gqlServer() {
     playground: true
   }) as any;
 
-  apolloServer.applyMiddleware({app, path: '/', cors: true});
+  apolloServer.applyMiddleware({app, path: '/graphql', cors: true});
   app.listen(port, '0.0.0.0');
   return app;
 }

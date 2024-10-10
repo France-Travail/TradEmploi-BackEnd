@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin"
-import {formatDate} from "../data/utils"
+import {formatDate} from "./utils"
 
 export const rates = async () => {
   if (!admin.apps.length) {
@@ -71,7 +71,7 @@ const buildRate = (r: any) => {
     user: r.user ? r.user : "",
     agency: r.agency ? r.agency : "",
     typeSTT: r.typeSTT ? r.typeSTT: "",
-    isTradTonDoc: r.isTradTonDoc ? r.isTradTonDoc: "",
+    isTradTonDoc: r.isTradTonDoc !== "" ? Boolean(r.isTradTonDoc) : false,
     nbTranslatedCharacters: r.nbTranslatedCharacters ? r.nbTranslatedCharacters : 0
   }
 }

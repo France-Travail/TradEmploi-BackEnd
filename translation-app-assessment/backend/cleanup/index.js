@@ -32,7 +32,7 @@ app.use(cors(corsOptions));
 const projectId = process.env.GCP_PROJECT
 
 // Call initializeFirebase during startup
-initializeFirebase();
+initializeFirebase().then();
 
 // Function to write monitoring "heartbeat" that cleanup has run
 const writeMonitoring = async () => {
@@ -75,8 +75,8 @@ const writeMonitoring = async () => {
     }
     return monitoring.createTimeSeries(request)
 }
-app.get('/', async (req, res) => {
-    console.log("hello");
+app.get('/', async (_req, _res) => {
+    console.log(`⚡️[server]: cleanup server is running on port ${port}`)
 })
 
 app.post('/', async (req, res, next) => {
@@ -92,25 +92,25 @@ app.post('/', async (req, res, next) => {
             deletionPromises.push(collection.doc(docSnapshot.id).delete())
         }
         await Promise.all(deletionPromises)
-        if(process.env.ID_BOT !== undefined) await cleanRatesFromBot();
+        if (process.env.ID_BOT !== undefined) await cleanRatesFromBot();
         await writeMonitoring()
         console.log(`deleted chats, size:${querySnapshot.size}`)
 
         await createLanguagesFromRates();
         await deleteInactiveUsers();
         res.status(204).send()
-    } catch(e) {
+    } catch (e) {
         next(e)
     }
 })
 
-app.use(function (err, req, res, /*unused*/ next) {
+app.use(function (err, req, res, _next) {
     console.error(err)
     res.status(500)
     res.send({ error: err })
 })
 
-const port = process.env.PORT || 8083
+const port = process.env.PORT || 8080
 app.listen(port, () => {
     console.log(`listening on port ${port}`)
 })
@@ -153,11 +153,11 @@ const buildkpi = (chat, roomId) => {
         messages.length > 0 ? getConversation(messages, members.length) : {}
     const device = getDevice(members, chat.support)
     return messages.length > 0 ? {
-            day: new Date(messages[0].date),
-            roomId: roomId,
-            conversation: conversation,
-            device: device,
-        }
+        day: new Date(messages[0].date),
+        roomId: roomId,
+        conversation: conversation,
+        device: device,
+    }
         : {}
 }
 
@@ -351,9 +351,8 @@ async function createLanguagesFromRates() {
     const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
     Array.from(languagesSorted.keys()).forEach(isoCode => {
-            createLanguage(isoCode, languagesSorted.get(isoCode), langaugesAverageRate.get(isoCode));
-        }
-    );
+        createLanguage(isoCode, languagesSorted.get(isoCode), langaugesAverageRate.get(isoCode));
+    });
     console.log(`language documents created, size: ${languagesSorted.size}`);
 }
 
@@ -373,7 +372,7 @@ async function deleteInactiveUsers() {
     const oneYearAgo = Date.now() - 365 * 24 * 60 * 60 * 1000;
     try {
         let usersDeleted = 0;
-        let nextPageToken;
+        let nextPageToken = '';
 
         do {
             const result = await auth.listUsers(1000, nextPageToken);

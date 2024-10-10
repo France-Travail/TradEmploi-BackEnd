@@ -1,13 +1,10 @@
 // Copyright 2020 Google LLC. This software is provided as-is, without warranty
 // or representation for any use or purpose. Your use of it is subject to your
 // agreement with Google.
-"use strict"
-const express = require("express")
+'use strict'
+const express = require('express')
 const bodyParser = require('body-parser')
-const helmet = require('helmet')
 const cors = require('cors')
-const cookieParser = require('cookie-parser')
-require('dotenv')
 
 const corsOptions = {
   origin: process.env.FRONTEND_URL,
@@ -21,13 +18,10 @@ app.disable('x-powered-by')
 
 app.use(bodyParser.json())
 
-app.use(cookieParser())
-app.use(helmet())
-
 app.get('/', async (req, res, next) => {
   try {
-    var idDGASI = req.query.idDGASI;
-    console.log('idDGASI:', idDGASI);
+    var hashedEmail = req.query.hashedEmail;
+    console.log('hashed email:',hashedEmail);
     const response = {
       status: 200,
       idDGASI,
@@ -39,13 +33,7 @@ app.get('/', async (req, res, next) => {
   }
 })
 
-app.use(function (err, req, res, /*unused*/ next) {
-  console.error(err)
-  res.status(500)
-  res.send({ error: err })
-})
-
-const port = process.env.PORT || 8082
+const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })

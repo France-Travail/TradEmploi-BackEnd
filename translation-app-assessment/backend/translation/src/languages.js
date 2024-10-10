@@ -13,8 +13,10 @@ const deeplLanguages = [
   "ID",
   "IT",
   "JA",
+  "KO",
   "LT",
   "LV",
+  "NB",
   "NL",
   "PL",
   "PT",
@@ -24,6 +26,7 @@ const deeplLanguages = [
   "SL",
   "SV",
   "TR",
+  "UK",
   "ZH",
 ]
 module.exports = {
