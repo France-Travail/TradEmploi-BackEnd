@@ -31,9 +31,6 @@ app.use(cors(corsOptions));
 // Init project and services
 const projectId = process.env.GCP_PROJECT
 
-// Call initializeFirebase during startup
-initializeFirebase().then();
-
 // Function to write monitoring "heartbeat" that cleanup has run
 const writeMonitoring = async () => {
     const monitoringOptions = {
@@ -81,6 +78,9 @@ app.get('/', async (_req, _res) => {
 
 app.post('/', async (req, res, next) => {
     try {
+
+        // Call initializeFirebase during startup
+        await initializeFirebase();
 
         await kpi()
         // Delete chat that have been expired for an hour or longer
