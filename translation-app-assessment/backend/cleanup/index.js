@@ -328,26 +328,25 @@ async function createLanguagesFromRates() {
     let languagesSelected = [];
     const langaugesAverageRate = new Map();
     await firebaseAdmin.firestore().collection("rates").get().then((res) => {
-            res.forEach((doc) => {
-                const data = doc.data();
-                const language = data.language + '';
-                const user = data.user + '';
-                const excludedUsers = [process.env.ID_BOT];
-                if (language && !excludedUsers.includes(user)) {
-                    languagesSelected = languagesSelected.concat(language.split(','));
-                    if (data.grades && data.grades.length > 0) {
-                        const grade = data.grades[0];
-                        const existingItem = langaugesAverageRate.get(language);
-                        if (existingItem) {
-                            langaugesAverageRate.set(language, existingItem + grade);
-                        } else {
-                            langaugesAverageRate.set(language, grade);
-                        }
+        res.forEach((doc) => {
+            const data = doc.data();
+            const language = data.language + '';
+            const user = data.user + '';
+            const excludedUsers = [process.env.ID_BOT];
+            if (language && !excludedUsers.includes(user)) {
+                languagesSelected = languagesSelected.concat(language.split(','));
+                if (data.grades && data.grades.length > 0) {
+                    const grade = data.grades[0];
+                    const existingItem = langaugesAverageRate.get(language);
+                    if (existingItem) {
+                        langaugesAverageRate.set(language, existingItem + grade);
+                    } else {
+                        langaugesAverageRate.set(language, grade);
                     }
                 }
-            })
-        }
-    )
+            }
+        })
+    })
     const mapLanguages = languagesSelected.filter(l => l).reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
     const languagesSorted = new Map([...mapLanguages.entries()].sort((a, b) => b[1] - a[1]));
     Array.from(languagesSorted.keys()).forEach(isoCode => {
