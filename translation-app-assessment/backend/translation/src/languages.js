@@ -1,4 +1,5 @@
 const deeplLanguages = [
+  "AR",
   "BG",
   "CS",
   "DA",
