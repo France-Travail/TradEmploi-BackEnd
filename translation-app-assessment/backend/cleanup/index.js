@@ -97,6 +97,9 @@ app.post('/', async (req, res, next) => {
         console.log(`deleted chats, size:${querySnapshot.size}`)
 
         await createLanguagesFromRates();
+
+        await cleanOldRates();
+        await cleanOldKPIs();
         await deleteInactiveUsers();
         res.status(204).send()
     } catch (e) {
@@ -363,6 +366,48 @@ async function createLanguage(isoCode, occurrences, average) {
     }
     await firebaseAdmin.firestore().collection("languages").doc(isoCode).set(data)
 }
+
+
+/**
+ * Clear 1 year old rates from firebase database
+ * 
+ * warning if this cleanup hasn't been run periodically, ram usage will be hight.
+ */
+async function cleanOldRates() {
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    const deletionPromises = [];
+    const collection = firestore.collection('rates');
+
+    // Query for documents where the date is older than one year
+    const querySnapshot = await collection.where('date', '<', oneYearAgo).get();
+
+    for (const docSnapshot of querySnapshot.docs) {
+        deletionPromises.push(collection.doc(docSnapshot.id).delete());
+    }
+}
+
+/**
+ * Clear 1 month old kpi from firebase database
+ * 
+ * warning if this cleanup hasn't been run periodically, ram usage will be verry hight.
+ */
+async function cleanOldKPIs() {
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const deletionPromises = [];
+    const collection = firestore.collection('kpis');
+
+    // Query for documents where the date is older than one year
+    const querySnapshot = await collection.where('date', '<', oneMonthAgo).get();
+
+    for (const docSnapshot of querySnapshot.docs) {
+        deletionPromises.push(collection.doc(docSnapshot.id).delete());
+    }
+}
+
 
 async function deleteInactiveUsers() {
 
