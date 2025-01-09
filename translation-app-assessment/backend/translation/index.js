@@ -11,7 +11,7 @@ app.disable("x-powered-by")
 app.use(bodyParser.json())
 
 const corsOptions = {
-  origin: 'http://localhost:4200',
+  origin: process.env.FRONTEND_URL,
   credentials: true,  // Permet les requêtes incluant les cookies
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
   methods: ['POST'],
@@ -30,30 +30,29 @@ app.post("/", async (req, res) => {
   const targetLanguageSplitted = req.body.targetLanguageCode
     .split("-")[0]
     .toUpperCase()
-  const useDeepl = false;
+  const useDeepl = process.env.DEEPL_API_KEY
   const currentUserDomain = req.body.currentUserDomain
   const isTradTonDoc = req.body.isTradTonDoc
+
   const translatedText =
     deeplLanguages.includes(targetLanguageSplitted) &&
     deeplLanguages.includes(sourceLanguageSplitted) &&
     useDeepl
       ? await translateWithDeepl(
-          req.body.text,
-          req.body.targetLanguageCode,
-          req.body.sourceLanguageCode,
-          targetLanguageSplitted,
-          sourceLanguageSplitted,
-          currentUserDomain,
-          isTradTonDoc
-        )
+        req.body.text,
+        targetLanguageSplitted,
+        sourceLanguageSplitted,
+        currentUserDomain,
+        isTradTonDoc
+      )
       : await translateText(
-          req.body.projectId,
-          req.body.text,
-          req.body.targetLanguageCode,
-          req.body.sourceLanguageCode,
-          currentUserDomain,
-          isTradTonDoc
-        )
+        req.body.projectId,
+        req.body.text,
+        req.body.targetLanguageCode,
+        req.body.sourceLanguageCode,
+        currentUserDomain,
+        isTradTonDoc
+      )
 
   const response = {
     status: 200,
@@ -62,7 +61,7 @@ app.post("/", async (req, res) => {
   res.send(response)
 })
 
-const port = process.env.PORT || 8081
+const port = process.env.PORT || 8080
 app.listen(port, () => {
   console.log(`listening on port ${port}`)
 })
@@ -79,71 +78,20 @@ async function translateText(
   isTradTonDoc
 ) {
   console.log(`Use Google cloud translation from ${sourceLanguageCode} to ${targetLanguageCode} by ${currentUserDomain} for ${isTradTonDoc ? 'TradTonDoc' : 'Chat'}`)
-  targetLanguageCode = getLanguageName(targetLanguageCode);
-  console.log(targetLanguageCode)
-  console.log(text);
-  const requestBody = {
-    messages: [
-      { role: "user", content: `Translate the following from French to English: ${text}.` }
-    ],
-    temperature: 0.7,
-    max_tokens: -1,
-    stream: false
-  };
-
-  try {
-    const response = await fetch('http://localhost:1234/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    });
-
-    if (!response.ok) {
-      throw new Error(`API request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log(data.choices[0].message.content);
-    return data.choices[0].message.content; // Adapter en fonction du format de la réponse
-  } catch (error) {
-    console.error("Error during translation request:", error.message);
-    throw error;
+  const request = {
+    parent: `projects/${projectId}/locations/${location}`,
+    contents: [text],
+    mimeType: "text/plain",
+    sourceLanguageCode,
+    targetLanguageCode,
   }
+
+  const [response] = await translationClient.translateText(request)
+
+  return response.translations[0].translatedText
 }
 
 process.on("unhandledRejection", (err) => {
-  console.error(err.message);
-  process.exitCode = 1;
-});
-
-function getLanguageName(languageCode) {
-  switch (languageCode) {
-    case "de-DE":
-      return "Allemand";
-    case "fr-FR":
-      return "Français";
-    case "en-US":
-    case "en-GB":
-      return "Anglais";
-    case "es-ES":
-      return "Espagnol";
-    case "it-IT":
-      return "Italien";
-    case "pt-PT":
-      return "Portugais";
-    case "nl-NL":
-      return "Néerlandais";
-    case "ja-JP":
-      return "Japonais";
-    case "zh-CN":
-      return "Chinois";
-    case "ru-RU":
-      return "Russe";
-    // Ajoute d'autres langues si nécessaire
-    default:
-      return "Langue inconnue";
-  }
-}
-
+  console.error(err.message)
+  process.exitCode = 1
+})
