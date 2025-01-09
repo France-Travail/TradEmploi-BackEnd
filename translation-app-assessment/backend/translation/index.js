@@ -41,6 +41,8 @@ app.post("/", async (req, res) => {
           req.body.text,
           req.body.targetLanguageCode,
           req.body.sourceLanguageCode,
+          targetLanguageSplitted,
+          sourceLanguageSplitted,
           currentUserDomain,
           isTradTonDoc
         )
