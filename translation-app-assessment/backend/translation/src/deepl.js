@@ -18,6 +18,7 @@ const translateWithDeepl = (text, targetLang, sourceLang, currentUserDomain, isT
         'target_lang': targetLang,
         'glossary_id': glossaryParameter
     }
+    console.log(data);
     return axios
     .post(
       'https://api.deepl.com/v2/translate',
